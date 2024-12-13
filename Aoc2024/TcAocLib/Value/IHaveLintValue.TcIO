@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="IHaveLintValue" Id="{3933348a-70aa-429e-9e11-3a6844995784}">
+    <Declaration><![CDATA[(*
+	dont we all?
+*)
+INTERFACE IHaveLintValue EXTENDS CNM_AbstractObject.IObject
+]]></Declaration>
+    <Property Name="value" Id="{97763720-a23a-4d77-800b-edce7b764b19}">
+      <Declaration><![CDATA[PROPERTY value : LINT]]></Declaration>
+      <Get Name="Get" Id="{45900457-b06a-407f-8100-f0aa97ce7530}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{7736400f-f53a-4c31-ac9c-b137f29d7b9c}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+  </Itf>
+</TcPlcObject>

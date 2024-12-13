@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="IHaveUlintValue" Id="{f705222f-5fce-45b1-95d7-5ab59ce05c6f}">
+    <Declaration><![CDATA[(*
+	dont we all?
+*)
+INTERFACE IHaveUlintValue EXTENDS CNM_AbstractObject.IObject
+]]></Declaration>
+    <Property Name="value" Id="{cf46b51f-37c0-4bba-a4cf-97f579adb3c7}">
+      <Declaration><![CDATA[PROPERTY value : ULINT]]></Declaration>
+      <Get Name="Get" Id="{162cab22-fbd3-4f4d-91e2-77fa925b13b0}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{12510490-aa8c-416e-a741-05448fc97d25}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+  </Itf>
+</TcPlcObject>

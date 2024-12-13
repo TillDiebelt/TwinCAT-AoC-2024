@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="MoveLeft" Id="{ea0ec2c9-e0a4-4732-9c3b-d55d6250ff60}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK MoveLeft EXTENDS GuardMove
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="className" Id="{8b86d80d-49b2-4159-8a57-7dc9ec9c2cc0}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This abstract property returns the class name of the concrete object, 
+which is useful for logging/debugging purpose or to check the class name
+for ``__DELETE`` in factories (sometimes it's necessary to do more 
+than just to free the memory).
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+PROPERTY className : CNM_AbstractObject.ClassName
+]]></Declaration>
+      <Get Name="Get" Id="{35d7c351-b97f-491c-a412-01c5c8910b21}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[className := 'MoveLeft';]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="direction" Id="{57addffb-ab44-41bf-abe2-004a30218ec3}">
+      <Declaration><![CDATA[PROPERTY PROTECTED direction : Rotation
+]]></Declaration>
+      <Get Name="Get" Id="{cf2cab31-e8d9-4ae2-a598-f9b9c6004612}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[direction := Rotation.LEFT;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FileHandler" Id="{80884777-5cf5-4deb-bb29-f24b80a9cfdd}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FileHandler
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	fbFileOpen		:FB_FileOpen;	
+	fbFileClose		:FB_FileClose;	
+	writer		:FB_FileWrite;
+	reader :FB_FileRead;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Global.TC_EVENTS.AocError.ParseError;
+]]></ST>
+    </Implementation>
+    <Method Name="read" Id="{9a40458d-3b5c-4eb2-9d1a-51be68b9d507}">
+      <Declaration><![CDATA[METHOD read : SingleExecutionState
+VAR_INPUT
+	execute			: BOOL;	(* Rising edge starts program execution *)
+	text :POINTER TO BYTE;
+	sNetId			: T_AmsNetId;		(* TwinCAT system network address *)
+	sDirectoryPath	: T_MaxString;		(* CSV destination directory path e.g. 'C:/temp/' *)
+	sFileName		: T_MaxString;		(* CSV destination file name e.g. 'Dividos' automatically extended by a timestamp *)
+	readLen : UDINT;
+END_VAR
+VAR_INST
+	cm :CNM_CycleManager.SimpleCycleManager();
+	hFile			: UINT		:= 0;	(* File handle of the source file *)
+END_VAR
+VAR
+	busy			: BOOL;
+	bError			: BOOL;
+	nErrId			: UDINT;
+	writeString 		: STRING(255);
+END_VAR
+VAR CONSTANT
+	STATE_OPEN_SOURCE_FILE	: INT := 2;
+	STATE_WAIT_FILE_OPENED	: INT := 3;
+	STATE_READ				: INT := 4;
+	STATE_READ_FINISHED	: INT := 5;
+	STATE_CLOSE_SOURCE_FILE	: INT := 6;
+	STATE_WAIT_FILE_CLOSED	: INT := 7;
+	STATE_ERROR				: INT := 100;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[cm(execute := execute);
+
+CASE cm.step.current OF
+CNM_ReturnTypes.DefaultSteps.STEP.IDLE:;
+CNM_ReturnTypes.DefaultSteps.STEP.INIT:
+	busy 	:= TRUE;
+	bError	:= FALSE;
+	nErrId	:= 0;
+	cm.proceed();
+
+STATE_OPEN_SOURCE_FILE:	(* Open source file *)
+	fbFileOpen( 
+		sNetId := sNetId, 
+		sPathName := Tc2_Standard.CONCAT(Tc2_Standard.CONCAT(sDirectoryPath, '\'), sFileName),
+		nMode := Tc2_System.Global_Variables.FOPEN_MODEREAD OR Tc2_System.Global_Variables.FOPEN_MODETEXT,(* Open file in TEXT mode! *)
+		ePath := PATH_GENERIC, 
+		hFile => hFile,
+		bExecute := cm.executeStep,
+		bBusy => busy
+	);
+	cm.waitFor(NOT busy);
+
+STATE_WAIT_FILE_OPENED:
+	IF NOT fbFileOpen.bError THEN
+		cm.proceed();
+	ELSE(* Error: file not found? *)
+		cm.evaluate(state := CNM_ReturnTypes.SingleExecutionState.ERROR);
+	END_IF
+
+STATE_READ:
+	reader(
+		sNetId := sNetId, 
+		hFile := hFile, 
+		pReadBuff := text,
+		bExecute := cm.executeStep,
+		cbReadLen := readLen,
+		bBusy => busy,
+	);
+	cm.waitFor(NOT busy);
+
+STATE_READ_FINISHED:	(* Wait until write not busy *)
+	IF NOT writer.bError THEN
+		cm.proceed();
+	ELSE(* Error: file not found? *)
+		cm.proceedWith(STATE_CLOSE_SOURCE_FILE);
+	END_IF
+
+STATE_CLOSE_SOURCE_FILE:	(* Close source file *)
+	fbFileClose( 
+		sNetId := sNetId, 
+		hFile := hFile, 
+		bExecute := cm.executeStep,
+		bBusy => busy
+	);
+	cm.waitFor(NOT busy);
+
+STATE_WAIT_FILE_CLOSED:(* Wait until close not busy *)
+	IF NOT fbFileClose.bError THEN
+		cm.proceedWith(CNM_ReturnTypes.DefaultSteps.STEP.SUCCESS);
+	ELSE(* Error: file not found? *)
+		cm.evaluate(state := CNM_ReturnTypes.SingleExecutionState.ERROR);
+	END_IF
+	
+CNM_ReturnTypes.DefaultSteps.STEP.ERROR:;
+CNM_ReturnTypes.DefaultSteps.STEP.SUCCESS:;
+END_CASE
+
+read := cm.state;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="write" Id="{5c7f5b9a-8303-4883-a09d-8ea11c2f9642}">
+      <Declaration><![CDATA[METHOD write : CNM_ReturnTypes.SingleExecutionState
+VAR_INPUT
+	execute			: BOOL;	(* Rising edge starts program execution *)
+	text :POINTER TO BYTE;
+	sNetId			: T_AmsNetId;		(* TwinCAT system network address *)
+	sDirectoryPath	: T_MaxString;		(* CSV destination directory path e.g. 'C:/temp/' *)
+	sFileName		: T_MaxString;		(* CSV destination file name e.g. 'Dividos' automatically extended by a timestamp *)
+END_VAR
+VAR_INST
+	cm :CNM_CycleManager.SimpleCycleManager();
+	hFile			: UINT		:= 0;	(* File handle of the source file *)
+END_VAR
+VAR
+	busy			: BOOL;
+	bError			: BOOL;
+	nErrId			: UDINT;
+	writeString 		: STRING(255);
+END_VAR
+VAR CONSTANT
+	STATE_OPEN_SOURCE_FILE	: INT := 2;
+	STATE_WAIT_FILE_OPENED	: INT := 3;
+	STATE_WRITE				: INT := 4;
+	STATE_WRITE_FINISHED	: INT := 5;
+	STATE_CLOSE_SOURCE_FILE	: INT := 6;
+	STATE_WAIT_FILE_CLOSED	: INT := 7;
+	STATE_ERROR				: INT := 100;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[cm(execute := execute);
+
+CASE cm.step.current OF
+CNM_ReturnTypes.DefaultSteps.STEP.IDLE:;
+CNM_ReturnTypes.DefaultSteps.STEP.INIT:
+	busy 	:= FALSE;
+	bError	:= FALSE;
+	nErrId	:= 0;
+	cm.proceed();
+
+STATE_OPEN_SOURCE_FILE:	(* Open source file *)
+	fbFileOpen( 
+		sNetId := sNetId, 
+		sPathName := Tc2_Standard.CONCAT(Tc2_Standard.CONCAT(sDirectoryPath, '\'), sFileName),
+		nMode := FOPEN_MODEAPPEND OR FOPEN_MODETEXT,(* Open file in TEXT mode! *)
+		ePath := PATH_GENERIC, 
+		hFile => hFile,
+		bExecute := cm.executeStep,
+		bBusy => busy
+	);
+	cm.waitFor(NOT busy);
+
+STATE_WAIT_FILE_OPENED:
+	IF NOT fbFileOpen.bError THEN
+		cm.proceed();
+	ELSE(* Error: file not found? *)
+		cm.evaluate(state := CNM_ReturnTypes.SingleExecutionState.ERROR);
+	END_IF
+
+STATE_WRITE:
+	writer(
+		sNetId := sNetId, 
+		hFile := hFile, 
+		pWriteBuff := text, 
+		cbWriteLen := LEN2(text), 
+		bExecute := cm.executeStep,
+		bBusy => busy
+	);
+	cm.waitFor(NOT busy);
+
+STATE_WRITE_FINISHED:	(* Wait until write not busy *)
+	IF NOT writer.bError THEN
+		cm.proceed();
+	ELSE(* Error: file not found? *)
+		cm.proceedWith(STATE_CLOSE_SOURCE_FILE);
+	END_IF
+
+STATE_CLOSE_SOURCE_FILE:	(* Close source file *)
+	fbFileClose( 
+		sNetId := sNetId, 
+		hFile := hFile, 
+		bExecute := cm.executeStep,
+		bBusy => busy
+	);
+	cm.waitFor(NOT busy);
+
+STATE_WAIT_FILE_CLOSED:(* Wait until close not busy *)
+	IF NOT fbFileClose.bError THEN
+		cm.proceedWith(CNM_ReturnTypes.DefaultSteps.STEP.SUCCESS);
+	ELSE(* Error: file not found? *)
+		cm.evaluate(state := CNM_ReturnTypes.SingleExecutionState.ERROR);
+	END_IF
+	
+CNM_ReturnTypes.DefaultSteps.STEP.ERROR:;
+CNM_ReturnTypes.DefaultSteps.STEP.SUCCESS:;
+END_CASE
+
+write := cm.state;
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

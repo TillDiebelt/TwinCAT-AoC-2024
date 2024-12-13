@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcModuleClass xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance2" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2009/05/TcModuleClass" GeneratedBy="TwinCAT XAE Plc">
+  <DataTypes>
+    <DataType>
+      <Name GUID="{D00B082B-57D8-4AC8-8507-86F44A26E0F2}" Namespace="AoC">AocError</Name>
+      <DisplayName TxtId=""><![CDATA[NewEventClass_DisplayText]]></DisplayName>
+      <EventId>
+        <Name Id="1">ParseError</Name>
+        <DisplayName TxtId=""><![CDATA[ParseError]]></DisplayName>
+        <Severity>Error</Severity>
+      </EventId>
+      <EventId>
+        <Name Id="2">CalculationError</Name>
+        <DisplayName TxtId=""><![CDATA[CalculationError]]></DisplayName>
+        <Severity>Error</Severity>
+      </EventId>
+      <EventId>
+        <Name Id="3">TestError</Name>
+        <DisplayName TxtId=""><![CDATA[TestError]]></DisplayName>
+        <Severity>Error</Severity>
+      </EventId>
+      <EventId>
+        <Name Id="4">Wtf</Name>
+        <DisplayName TxtId=""><![CDATA[AocErrorEvent4_DisplayText]]></DisplayName>
+        <Severity>Verbose</Severity>
+      </EventId>
+      <Translations>
+        <Text TxtId="ParseError">
+          <Text LcId="1031"><![CDATA[Fehler beim Parsen der Eingabe {0}]]></Text>
+          <Text LcId="1033"><![CDATA[Error while parsing input {0}]]></Text>
+        </Text>
+        <Text TxtId="CalculationError">
+          <Text LcId="1031"><![CDATA[Fehler beim berechnen des Ergebniss {0}]]></Text>
+          <Text LcId="1033"><![CDATA[Error while calculationg the result {0}]]></Text>
+        </Text>
+        <Text TxtId="TestError">
+          <Text LcId="1031"><![CDATA[Ein Test ist Fehlgeschlagen {0}]]></Text>
+          <Text LcId="1033"><![CDATA[A test case failed {0}]]></Text>
+        </Text>
+        <Text TxtId="AocErrorEvent4_DisplayText">
+          <Text LcId="1031"><![CDATA[was zum fick {0}]]></Text>
+          <Text LcId="1033"><![CDATA[wtf {0}]]></Text>
+        </Text>
+      </Translations>
+      <Hides>
+        <Hide GUID="{0708F746-AACA-4C77-B13F-B93D261D6C05}" />
+        <Hide GUID="{77E23522-69DE-4757-87C5-BC2469A12647}" />
+        <Hide GUID="{3466FA49-B8A1-4D6A-8BF0-FFA46AB6B638}" />
+        <Hide GUID="{CA4BB751-07EC-4FBA-8E56-4475F9F38CC5}" />
+        <Hide GUID="{BD9442A8-7761-4A47-92AD-DB14B706C557}" />
+        <Hide GUID="{11EFC73C-483B-4D55-B3F7-DF65C9767DB3}" />
+        <Hide GUID="{14CD66B8-33E5-45E3-A78D-4407A1C04D2D}" />
+        <Hide GUID="{DFA6279E-B497-4E13-A415-0436F391259D}" />
+        <Hide GUID="{2F411C81-B6B3-43CB-A258-067713DD0E98}" />
+        <Hide GUID="{22846938-E231-4F00-8172-8B217000BD5D}" />
+      </Hides>
+    </DataType>
+  </DataTypes>
+</TcModuleClass>

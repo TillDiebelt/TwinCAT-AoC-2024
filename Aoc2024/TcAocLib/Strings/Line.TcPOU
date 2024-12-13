@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Line" Id="{7b6e3f51-79c2-4027-9e12-15f5f4e60ad8}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'enable_dynamic_creation'}
+FUNCTION_BLOCK Line EXTENDS Object IMPLEMENTS ILine
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	content :STRING(255);
+	number :LREAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="className" Id="{f17ccc49-279b-4c5b-9cea-b224d7deceb7}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This abstract property returns the class name of the concrete object, 
+which is useful for logging/debugging purpose or to check the class name
+for ``__DELETE`` in factories (sometimes it's necessary to do more 
+than just to free the memory).
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+PROPERTY className : CNM_AbstractObject.ClassName
+]]></Declaration>
+      <Get Name="Get" Id="{00ad9ba0-6c99-4050-a76f-b21a2decc352}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="splitBy" Id="{8d60f00c-e4f1-43f8-9091-369ad2f7612c}">
+      <Declaration><![CDATA[METHOD splitBy :IStringContainerList
+VAR_INPUT
+	splitter	: STRING(255);
+	addEmptyEntries :BOOL := FALSE;
+END_VAR
+VAR
+	pContainterList :POINTER TO StringContainerList;
+	
+	index :INT;
+	searchindex :INT;
+	textSize :INT;
+	splitterSize :INT;
+	lastSplit :INT;
+	startSearchIndex : UDINT;
+	pContainer :POINTER TO Line;
+	currentText : STRING(255);
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[splitterSize := Tc2_Standard.LEN(splitter);
+textSize := Tc2_Standard.LEN(THIS^.text);
+
+pContainterList := __NEW(StringContainerList());
+splitBy := pContainterList^;
+
+RETURN (splitterSize = 0);
+
+lastSplit := 0;
+FOR index := 0 TO textSize DO
+	startSearchIndex := index;
+	searchindex := 0;
+	WHILE(startSearchIndex+searchindex < textSize AND_THEN THIS^.content[startSearchIndex+searchindex] = splitter[searchindex])DO
+		IF(searchindex = splitterSize)THEN //10 is newLine $N
+			Tc2_System.MEMSET(ADR(currentText), 0, SIZEOF(currentText));
+			Tc2_System.MEMCPY(ADR(currentText), ADR(THIS^.content)+startSearchIndex+searchindex, startSearchIndex + searchindex - splitterSize);
+			IF(Tc2_Standard.LEN(currentText) = 0 AND NOT addEmptyEntries)THEN
+				index := index + searchindex;
+				EXIT;
+			END_IF
+			pContainer := __NEW(Line());
+			pContainer^.text := currentText;
+			splitBy.append(pContainer^);
+			index := index + searchindex;
+			lastSplit := index;
+			EXIT;
+		END_IF
+		searchindex := searchindex+1;
+	END_WHILE
+END_FOR
+
+Tc2_System.MEMSET(ADR(currentText), 0, SIZEOF(currentText));
+Tc2_System.MEMCPY(ADR(currentText), ADR(THIS^.content) + lastSplit, index - lastSplit);
+IF(Tc2_Standard.LEN(currentText) = 0 AND NOT addEmptyEntries)THEN
+	RETURN;
+END_IF
+pContainer := __NEW(Line());
+pContainer^.text := currentText;
+splitBy.append(pContainer^);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="text" Id="{79dac07b-3bdd-45ae-af6f-81d7a2721ad2}">
+      <Declaration><![CDATA[PROPERTY text : STRING(255)]]></Declaration>
+      <Get Name="Get" Id="{6fd401ff-7629-4074-a65e-624c5bfa03e0}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[text := THIS^.content;
+]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{dee87da9-a613-4c6c-9d67-42b6fd814ce1}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[THIS^.content := text;
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="value" Id="{7ee6d61b-e2c5-4f24-b999-2dba45460860}">
+      <Declaration><![CDATA[PROPERTY value : LREAL
+]]></Declaration>
+      <Get Name="Get" Id="{6e4fb4bf-58bb-45ce-a18a-f45bc2f5c248}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[value := THIS^.number;
+]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{06d6946e-370f-43c4-bbdb-87cf1e0242e8}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[THIS^.number := value;
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+  </POU>
+</TcPlcObject>

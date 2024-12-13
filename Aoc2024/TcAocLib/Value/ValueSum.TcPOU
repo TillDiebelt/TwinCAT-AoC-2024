@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ValueSum" Id="{3ec42af7-f5d5-4ca1-a3db-3ddee1c8dc28}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ValueSum EXTENDS AbstractApplier
+VAR
+	valueObject :IHaveValue;
+	mySum :LREAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="accept" Id="{0751e69f-a6a2-4b2f-a8b6-e674aab29d11}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+Methode to accept an object.
+Example:
+NumberIncrementer.accept(Number);
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=========================
+
+*)
+METHOD accept : CNM_CollectionInterfaces.CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*object to accept*)
+	object	: CNM_CollectionInterfaces.CNM_AbstractObject.IObject;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF(__QUERYINTERFACE(object, THIS^.valueObject))THEN
+	accept := CNM_ReturnTypes.SingleExecutionResult.SUCCESS;
+ELSE
+	accept := CNM_ReturnTypes.SingleExecutionResult.ERROR;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="apply" Id="{4bfc40b2-2e65-4325-a442-04dfeada8c78}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+A method to apply the concrete action on the given object (THIS^.object)
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=========================
+:return: CNM_ReturnTypes.ExecutionState
+
+*)
+METHOD apply : CNM_CollectionInterfaces.CNM_ReturnTypes.SingleExecutionState
+VAR_INPUT
+	(*control bit to start or abort the application, should to be active until the ExecutionState is SUCCESS*)
+	execute	: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[RETURN (NOT execute);
+
+apply := CNM_ReturnTypes.SingleExecutionState.ERROR;
+
+RETURN (THIS^.isObjectNull(THIS^.valueObject));
+
+apply := CNM_ReturnTypes.SingleExecutionState.SUCCESS;
+THIS^.sum := THIS^.sum + THIS^.valueObject.value;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="className" Id="{3a7d4571-9147-44f0-bef9-d32ffcb20ebd}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This abstract property returns the class name of the concrete object, 
+which is useful for logging/debugging purpose or to check the class name
+for ``__DELETE`` in factories (sometimes it's necessary to do more 
+than just to free the memory).
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+PROPERTY className : CNM_AbstractObject.ClassName
+]]></Declaration>
+      <Get Name="Get" Id="{771953c3-e3fa-490b-a5a5-08404ff7d78a}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[className := 'AOC.ValueSum';
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="sum" Id="{f63c941b-c6a9-4e27-8b47-e115b7bda489}">
+      <Declaration><![CDATA[PROPERTY sum : LREAL]]></Declaration>
+      <Get Name="Get" Id="{32ffe4ab-d42c-4f8a-b732-0ee335b0e25f}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[sum := THIS^.mySum;
+]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{659b2951-73b8-420c-b34f-d84ac9512ea0}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[THIS^.mySum := sum;
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+  </POU>
+</TcPlcObject>

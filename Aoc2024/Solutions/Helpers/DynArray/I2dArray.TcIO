@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="I2dArray" Id="{d676691e-067c-4f87-9742-c480277f1a4d}">
+    <Declaration><![CDATA[INTERFACE I2dArray EXTENDS CNM_AbstractObject.IObject
+]]></Declaration>
+    <Method Name="getObjectAt" Id="{d9bdc8fe-8fe4-4f40-9382-14fac6cc9e11}">
+      <Declaration><![CDATA[METHOD getObjectAt : IObject
+VAR_INPUT
+	y :UDINT; //dimension 1
+	x :UDINT; //dimension 2
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="isInBounds" Id="{1553d63e-8e64-45b5-bdf3-768f865de7a2}">
+      <Declaration><![CDATA[METHOD isInBounds : BOOL
+VAR_INPUT
+	x :UDINT;
+	y :UDINT;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="setObjectAt" Id="{ab7f73bb-f532-4f5f-a821-52316f87c8f0}">
+      <Declaration><![CDATA[METHOD setObjectAt
+VAR_INPUT
+	y :UDINT; //dimension 1
+	x :UDINT; //dimension 2
+	obj :CNM_AbstractObject.IObject;
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="MulInstruction" Id="{cad2a2d0-65cc-4d03-b077-a0efa50607cb}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'enable_dynamic_creation'}
+FUNCTION_BLOCK MulInstruction EXTENDS Object IMPLEMENTS ISingleAttempt
+VAR
+	myLeft :LINT;
+	myRight :LINT;
+	myCollector :ISumCollectorLINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="className" Id="{27f8e4b4-beb7-48c8-8d70-336a5bb8f205}">
+      <Declaration><![CDATA[{warning 'Add property implementation'}
+(*
+
+short summary
+=================
+This abstract property returns the class name of the concrete object, 
+which is useful for logging/debugging purpose or to check the class name
+for ``__DELETE`` in factories (sometimes it's necessary to do more 
+than just to free the memory).
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+PROPERTY className : CNM_AbstractObject.ClassName
+]]></Declaration>
+      <Get Name="Get" Id="{35a70913-05e4-4d48-86b5-1e7783c154cc}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[className := 'MulInstruction';]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="FB_Init" Id="{78736983-a00b-4805-b0a3-63106dc710e6}">
+      <Declaration><![CDATA[//FB_Init is always available implicitly and it is used primarily for initialization.
+//The return value is not evaluated. For a specific influence, you can also declare the
+//methods explicitly and provide additional code there with the standard initialization
+//code. You can evaluate the return value.
+METHOD FB_Init: BOOL
+VAR_INPUT
+    bInitRetains: BOOL; // TRUE: the retain variables are initialized (reset warm / reset cold)
+    bInCopyCode: BOOL;  // TRUE: the instance will be copied to the copy code afterward (online change)   
+	left :LINT;
+	right :LINT;
+	collector :ISumCollectorLINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.myLeft := left;
+THIS^.myRight := right;
+THIS^.myCollector := collector;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="invoke" Id="{6f737114-2017-4e35-bf3a-23a5fdeb35ca}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+Invokes the action associated with this interface.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2024 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+
+*)
+METHOD invoke : CNM_CycleManagerInterfaces.CNM_ReturnTypes.SingleExecutionResult
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.myCollector.addValue(THIS^.myLeft * THIS^.myRight);
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

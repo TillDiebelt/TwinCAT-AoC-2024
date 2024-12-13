@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="SumCollectorLINT" Id="{a5bcfd4a-6961-425e-8926-a633051e1e1e}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'enable_dynamic_creation'}
+FUNCTION_BLOCK SumCollectorLINT EXTENDS Object IMPLEMENTS ISumCollectorLINT
+VAR
+	isEnabled :BOOL := TRUE;
+	myValue :LINT := 0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="addValue" Id="{77bf7b2d-9759-4ada-b5ef-077a5c5ccc3e}">
+      <Declaration><![CDATA[METHOD addValue
+VAR_INPUT
+	value	: LINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[RETURN (NOT THIS^.enabled);
+THIS^.myValue := THIS^.myValue + value;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="className" Id="{a10ac7cf-7639-4fc5-9030-318cf98d2366}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This abstract property returns the class name of the concrete object, 
+which is useful for logging/debugging purpose or to check the class name
+for ``__DELETE`` in factories (sometimes it's necessary to do more 
+than just to free the memory).
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+PROPERTY className : CNM_AbstractObject.ClassName
+]]></Declaration>
+      <Get Name="Get" Id="{9c0f0154-b545-4405-90e2-5dee253fd021}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[className := 'SumCollectorLINT';
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="enabled" Id="{874b888c-b369-421f-bec7-c136045fe68a}">
+      <Declaration><![CDATA[PROPERTY enabled : BOOL]]></Declaration>
+      <Get Name="Get" Id="{2ed4ff11-968d-43ce-b3d5-02c0191f00b0}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[enabled := THIS^.isEnabled;
+]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{831e23bc-6c64-4091-bb0b-1736a3f2d4ea}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[THIS^.isEnabled := enabled;
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="sum" Id="{6a20d161-854d-4648-b75d-b7d8cf03a2c4}">
+      <Declaration><![CDATA[{warning 'Add property implementation'}
+PROPERTY sum : LINT
+]]></Declaration>
+      <Get Name="Get" Id="{877c739a-06cd-43b3-928d-d369325275cd}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[sum := THIS^.myValue;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{8bb68aa1-cff7-41d7-823a-823d330adf2f}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[THIS^.myValue := sum;
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+  </POU>
+</TcPlcObject>

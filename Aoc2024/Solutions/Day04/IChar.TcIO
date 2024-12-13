@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="IChar" Id="{876bc023-ccfe-405d-ad4a-28a85f8c9b09}">
+    <Declaration><![CDATA[INTERFACE IChar EXTENDS IObject
+]]></Declaration>
+    <Property Name="charAsByte" Id="{186704e7-3046-4fa3-9745-bbd41f13bec2}">
+      <Declaration><![CDATA[PROPERTY charAsByte : Byte]]></Declaration>
+      <Get Name="Get" Id="{a05506ca-9d39-4ce9-ab8d-3e27647a9a58}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="charAsString" Id="{64f3eeeb-5ee8-4a05-8005-c79f79819de1}">
+      <Declaration><![CDATA[PROPERTY charAsString : STRING(1)]]></Declaration>
+      <Get Name="Get" Id="{6acc084e-fcd3-4aa8-be31-d55534fb7b54}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+  </Itf>
+</TcPlcObject>

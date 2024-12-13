@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="ILine" Id="{f12f8a50-77ce-4b32-8977-4d350efde387}">
+    <Declaration><![CDATA[INTERFACE ILine EXTENDS IStringContainer
+]]></Declaration>
+    <Method Name="splitBy" Id="{c7d5a0a2-a8b4-4157-82a2-6f0ab10f5ea6}">
+      <Declaration><![CDATA[METHOD splitBy : IStringContainerList
+VAR_INPUT
+	splitter	: STRING(255);
+	addEmptyEntries :BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Day05Solution" Id="{6f9b162a-ccaf-4e2b-8f85-5bcbb7696eec}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Day05Solution EXTENDS AbstractSolver
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="solve" Id="{d83a76d7-7a01-40b5-9283-b6607d312d0d}">
+      <Declaration><![CDATA[METHOD solve
+VAR_INPUT
+	step	: DINT;
+END_VAR
+VAR_INST
+	pathInserted :BOOL;
+	pageOrders :CNM_Collections.ArrayList(1000);
+	pages :ARRAY[0..1000] OF IPage;
+	pageList1 :CNM_Collections.ArrayList(10);
+	pageList2 :CNM_Collections.ArrayList(10);
+	prints :CNM_Collections.ArrayList(100);	
+	currentParseList :CNM_CollectionInterfaces.IArrayList;
+	parser :NumberParser();
+	sum : DINT;
+	sum2 : DINT;
+END_VAR
+VAR
+	valid :BOOL;
+	parsed :CNM_CollectionInterfaces.IArrayList;
+	tmpObj :CNM_AbstractObject.IObject;
+	tmpValue:CNM_AoC.IHaveValue;
+	tmpPage :IPage;
+	tmpPage2 :IPage;
+	page1 :LREAL;
+	page2 :LREAL;
+	pPage :POINTER TO Page;
+	print :CNM_CollectionInterfaces.IArrayList;
+	pageOrder :CNM_CollectionInterfaces.IArrayList;
+	sequenceCopy :CNM_CollectionInterfaces.IArrayList;
+	index : DINT;
+	currentLine :ILine;
+	currentLineObject :IObject;
+END_VAR
+VAR CONSTANT
+	READ_INPUT :DINT := 2;
+	GET_LINES :DINT := READ_INPUT + 1;
+	PARSE :DINT := GET_LINES + 1;
+	PARSE_PAGES :DINT := PARSE + 1;
+	SOLVE_PART12 :DINT := PARSE_PAGES + 1;
+	APPEND_SOLUTION :DINT := SOLVE_PART12 + 1;
+	WRITE_SOLUTION :DINT := APPEND_SOLUTION + 1;
+	CLEAN_UP :DINT := WRITE_SOLUTION + 1;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE step OF
+PARSE:	
+	currentParseList := pageOrders;
+	THIS^.lines.iterate(execute := FALSE);
+	WHILE(THIS^.lines.iterate(execute := TRUE, line => currentLine) = CNM_ReturnTypes.SingleExecutionState.BUSY)DO
+		IF(LEN(currentLine.text) = 0)THEN
+			currentParseList := prints;
+			CONTINUE;
+		END_IF
+		parsed := parser.getAllNumbers(currentLine);
+		IF(parsed.size > 2 AND currentParseList.hashcode <> prints.hashcode)THEN
+			currentParseList := prints;			
+		END_IF
+		currentParseList.append(parsed);
+	END_WHILE
+	cm.proceed();	
+PARSE_PAGES:
+	cm.evaluate(pageOrders.iterate(cm.executeStep, object => tmpObj));
+	IF(__QUERYINTERFACE(tmpObj, pageOrder))THEN
+		pageOrder.getObjectAt(0, object => tmpObj);
+		__QUERYINTERFACE(tmpObj, tmpValue);
+		page1 := (tmpValue.value);
+		pageOrder.getObjectAt(1, object => tmpObj);
+		__QUERYINTERFACE(tmpObj, tmpValue);
+		page2 := (tmpValue.value);
+		
+		IF(pages[TO_DINT(page1)] <> 0)THEN
+			pages[TO_DINT(page1)].addSuccessor(tmpValue);
+		ELSE
+			pPage := __NEW(Page(value := page1));
+			__QUERYINTERFACE(pPage^, pages[TO_DINT(page1)]);
+			pages[TO_DINT(page1)].addSuccessor(tmpValue);
+		END_IF
+	END_IF	
+SOLVE_PART12:
+	cm.evaluate(prints.iterate(cm.executeStep, object => tmpObj));
+	IF(__QUERYINTERFACE(tmpObj, print))THEN
+		pageList1.clear();
+		pageList2.clear();
+		print.iterate(FALSE);
+		WHILE(print.iterate(TRUE, object => tmpObj) = CNM_ReturnTypes.SingleExecutionState.BUSY AND_THEN __QUERYINTERFACE(tmpObj, tmpValue))DO
+			pageList1.append(pages[TO_DINT(tmpValue.value)]);
+			pageList2.append(pages[TO_DINT(tmpValue.value)]);
+		END_WHILE
+		pageList2.instant.sort();	
+		valid := TRUE;
+		FOR index := 0 TO TO_DINT(pageList1.size)-1 DO
+			pageList1.getObjectAt(index, object => tmpObj);
+			__QUERYINTERFACE(tmpObj, tmpPage);
+			pageList2.getObjectAt(index, object => tmpObj);
+			__QUERYINTERFACE(tmpObj, tmpPage2);
+			valid := valid AND tmpPage.isEqual(tmpPage2);
+		END_FOR
+		pageList2.getObjectAt((pageList2.size-1)/2, object => tmpObj);
+		__QUERYINTERFACE(tmpObj, tmpPage2);
+		IF(valid)THEN			
+			sum := sum + TO_DINT(tmpPage2.value);
+		ELSE
+			sum2 := sum2 + TO_DINT(tmpPage2.value);			
+		END_IF
+	END_IF		
+APPEND_SOLUTION:
+	THIS^.bufferWrite :=Concat(THIS^.bufferWrite, Concat(TO_STRING(sum), '$n'));
+	THIS^.bufferWrite :=Concat(THIS^.bufferWrite, Concat(TO_STRING(sum2), '$n'));
+	cm.proceed();
+WRITE_SOLUTION:
+	THIS^.writeSolution();
+CLEAN_UP:
+	cm.step.next := CNM_ReturnTypes.DefaultSteps.STEP.SUCCESS;
+	lines.deepDestruct();
+	pageOrders.deepDestruct();
+	cm.proceed();
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

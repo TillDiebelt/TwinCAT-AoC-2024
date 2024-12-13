@@ -1,0 +1,1045 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="LineList" Id="{b15030db-490d-4ef0-82d7-005c853e7ace}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'enable_dynamic_creation'}
+FUNCTION_BLOCK LineList EXTENDS CNM_AbstractObject.Object IMPLEMENTS ILineList
+VAR
+	list : CNM_Collections.ArrayList(1000);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="Object" Id="{c1ed7c17-6094-4cb2-bdd0-4ac6ea061379}" />
+    <Method Name="append" Id="{13a53413-be7d-4921-a53c-36f48fa8332d}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This methode adds the given CNM_AbstractObject.IObject to the end of the list.
+Example: 
+Given a list that looks like this: (Head->) A B C (<- End),
+calling append(D) on this list will place the D at the and,
+making it the new End: (Head->) A B C D(<- End)
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+
+*)
+METHOD append : CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*The object to be appended*)
+	line	: ILine;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[append := THIS^.list.append(object := line);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="appendCollection" Id="{fbbab5bd-a80f-4b62-a9f2-8e8341a1cf63}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This methode adds all elements of the given collection to the end of this list.
+Example:
+For the list1: A B C and list2: D E F will be after list1.appendCollection(list2):
+A B C D E F. Notice the elements are still in the same order they where befor on each subsection.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+
+*)
+METHOD appendCollection : CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*The collection to be appended*)
+	collectionToAppend	: CNM_CollectionInterfaces.ICollection;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[appendCollection := THIS^.list.appendCollection(collectionToAppend);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="className" Id="{09660b95-41e7-4768-8afe-6c8d001b2d58}" FolderPath="Object\">
+      <Declaration><![CDATA[PROPERTY className : ClassName]]></Declaration>
+      <Get Name="Get" Id="{4c4a5ba2-2160-48c3-82ae-2e0d96bbe826}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[className := 'LineList';
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="clear" Id="{c7c49bbe-4390-43ff-8441-796063364e99}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This methode clears/deletes all clearable data from this object.
+Example:
+A list: 1 2 3 after list.clear() will have no remaining items, isEmpty = true.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+
+*)
+METHOD clear
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.list.clear();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="containsEqualLine" Id="{c2634b06-17ae-451d-b0dc-38eee6dbb592}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This methode checks if a given object is contained in the collection. 
+The object is inside if the collection contains an object where the default comperator of the objects returns EQUAL on compareTo!
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``FALSE``: list does not contain an equal object
+    ``TRUE``: list does contain an equal object
+
+*)
+METHOD containsEqualLine : BOOL
+VAR_INPUT
+	(*the object to be checked if it exists inside the collection*)
+	line	: ILine;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[containsEqualLine := THIS^.list.containsEqualObject(object := line);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="containsLine" Id="{2ca1f51a-5fae-4c58-a457-de1aa0e1b380}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This methode checks if a given object is contained in the collection. 
+The object is inside if the collection contains an object of equal hashcode!
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``FALSE``: list does not contain given object,
+    ``TRUE``: list does contain given object
+
+*)
+METHOD containsLine : BOOL
+VAR_INPUT
+	(*the object to be checked if it exists inside the collection*)
+	line	: ILine;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[containsLine := THIS^.list.containsObject(object := line);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="deepDestruct" Id="{da945ed7-0d84-4082-b7c3-46116ee5cbf1}" FolderPath="Object\">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This method is a self-destruction if the object was created dynamically.
+If the object is a container class, the container content is destroyed with it.
+The output NULL is a constant which is always NULL,
+this allows a semi-pleasant notation: ``foo.deepDestruct(NULL => foo);``.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+
+InOut:
+	+-----------------+------+---------+------------------------------------------+
+	| Scope           | Name | Type    | Comment                                  |
+	+=================+======+=========+==========================================+
+	| Output CONSTANT | NULL | __XWORD | ``NULL`` is a constant which is always 0 |
+	+-----------------+------+---------+------------------------------------------+
+
+*)
+METHOD deepDestruct
+VAR_OUTPUT CONSTANT
+	(* NULL is a constant which is always 0 *)
+	NULL	: __XWORD;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.list.deepDestruct();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="dequeue" Id="{1d15acef-0c5f-42a3-8c2b-122571dbbf5e}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This property returns the last object in the first and removes it from the list. Can be seen as opposite of prepend.
+Example:
+On a list: (Head -->) A B C, list.dequeue will return A.
+Example 2:
+If you call prepend(x), a dequeue right after will return x.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+METHOD dequeue : ILine
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[__QUERYINTERFACE(THIS^.list.dequeue(), dequeue);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_Exit" Id="{bea76fb4-ab5b-46fa-8dc4-0a69dd1248a2}">
+      <Declaration><![CDATA[(*FB_Exit must be implemented explicitly. If there is an implementation, then the
+method is called before the controller removes the code of the function block instance
+(implicit call). The return value is not evaluated.*)
+METHOD FB_Exit : BOOL
+VAR_INPUT
+	(* TRUE: the exit method is called in order to leave the instance which will be copied afterwards (online change).  *)
+	bInCopyCode	: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF(THIS^.isObjectValid(THIS^.list))THEN
+	THIS^.list.destruct();	
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="forEach" Id="{a0abab77-e660-4b68-ba39-d74e2c5f560d}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+Method to perform a given action on all objects inside the collection.
+Needs to reset the execution flag between calls.
+Action to perform needs to implement :ref:`IApplier`.
+Example:
+You have a list of numbers: 1 2 3 and a ConcreteIncrementApplier that can take  a number and increment it. 
+Calling list.forEach(TRUE, ConcreteIncrementApplier) will increment all numbers in the list, becoming: 2 3 4.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=========================
+:return: CNM_ReturnTypes.ExecutionState
+
+*)
+METHOD forEach : CNM_ReturnTypes.SingleExecutionState
+VAR_INPUT
+	(*control bit to start or abort the forEach loop*)
+	execute	: BOOL;
+	(*the applier (action) to be used on all obejcts in the collection*)
+	applier	: CNM_CollectionInterfaces.IApplier;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[forEach := THIS^.list.forEach.parallel(execute := execute, applier := applier);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="getIndexOf" Id="{ec3cc899-95e7-476d-ad39-74296dd8ca64}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This methode returns ths index of the first object that is equal to the given.
+Example:
+A list of: 1 2 3 after list.getIndexOf(1) will return: index=>0 and return IndexBounds.IN_BOUNDS
+Example 2:
+A list of: 1 2 3 after list.getIndexOf(4) will return: index=>3 and return IndexBounds.OUT_OF_BOUNDS
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``SingleExecutionResult.SUCCESS``: object found
+    ``SingleExecutionResult.ERROR``: object couldn't be found in the list, index is undefined
+
+*)
+METHOD getIndexOf : CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*the object to get the index from*)
+	line	: ILine;
+END_VAR
+VAR_OUTPUT
+	(*the index of the object inside the collection*)
+	index	: __XWORD;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[getIndexOf := THIS^.list.getIndexOf(object := line, index => index);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="getLineAt" Id="{396b6100-38f1-4e33-8371-983075989e6d}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This methode returns the object at the given index.
+Returned objects can be modified, but not replaced! To replace an object use replaceObjectAt.
+Example:
+A list of: 1 2 3 after list.getObjectAt(1) will return: object=>2 and return SingleExecutionResult.SUCCESS
+Example 2:
+A list of: 1 2 3 after list.getObjectAt(3) will return: object=>NULL and return SingleExecutionResult.ERROR
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``SingleExecutionResult.SUCCESS``: index was valid
+    ``SingleExecutionResult.ERROR``: index was not valid, returned object is undefined
+
+*)
+METHOD getLineAt : CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*the index to access the object from*)
+	index	: __XWORD;
+END_VAR
+VAR_OUTPUT
+	(*the object at the given index*)
+	line	: ILine;
+END_VAR
+VAR
+	tmp : IObject;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[getLineAt := THIS^.list.getObjectAt(index := index, object => tmp);
+__QUERYINTERFACE(tmp, line);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="hasElement" Id="{22a015fd-b82d-40b8-bfc5-dd63c8a9e913}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This property returns ``TRUE`` if the collection has any element.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+PROPERTY hasElement : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{19d62138-6b0c-4097-8db3-a79d9e233566}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[hasElement := this^.list.hasElement;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="insertLineAt" Id="{2fbf4c99-7123-4a13-b1c3-7c351e9c4324}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This methode adds the given object at the given index. 
+Will shift the other data starting at given index to the right.
+List Lenght will be incremented.
+Example:
+A list of: 1 2 3 after list.insertObjectAt(1, object:=4) will become: 1 4 2 3 and return SingleExecutionResult.SUCCESS
+Example 2:
+A list of: 1 2 3 after list.insertObjectAt(3, object:=4) will become: 1 2 3 4 and return SingleExecutionResult.SUCCESS
+Example 3:
+A list of: 1 2 3 after list.insertObjectAt(5, object:=4) will become: 1 2 3 and return SingleExecutionResult.ERROR
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``SingleExecutionResult.SUCCESS``: index was valid, object inserted
+    ``SingleExecutionResult.ERROR``: index out of bounds, list not changed
+
+*)
+METHOD insertLineAt : CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*the index to insert the object at*)
+	index	: __XWORD;
+	(*the object to be added*)
+	line	: ILine;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[insertLineAt := THIS^.list.insertObjectAt(index := index, object := line);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="inverseSort" Id="{6dcf984a-3c19-423b-b73c-6c6fd8a0853f}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This method sorts the Sortable in the inverted order, so from great to low
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=========================
+:return: ``ABORTED``: While inverse was pending,execute had a falling edge,
+	``BUSY``: Inverse is in progress
+	``ERROR``: Inverse was not able to finish (p.e. List changed) call inverse(false) to reset
+	``IDLE``: Currently invert is not in progress
+	``SUCCESS``: Inversing was finished 
+*)
+METHOD inverseSort : CNM_ReturnTypes.SingleExecutionState
+VAR_INPUT
+	(*control bit to start or abort the inverting, needs to be active until the ExecutionState is noz longer busy*)
+	execute	: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[inverseSort := THIS^.list.inverseSort(execute := execute);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="invert" Id="{9dbb1161-c660-488d-91e4-2ea9b99c5778}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+Inverts the order of the elements inside the object. Does not apply any kind of sorting, only reverses.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=========================
+
+*)
+METHOD invert
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.list.invert();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="isEmpty" Id="{27fae613-0223-4dda-afa2-aafe28368d05}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This property returns ``TRUE`` if the collection is empty.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+PROPERTY isEmpty : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{db0f414e-933a-4e46-a50b-54262846d171}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[isEmpty := THIS^.list.isEmpty;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="iterate" Id="{93ffdfe0-3bdf-46ee-aeb7-6b3a37d476a0}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This methode returns the next object in the iteration and returns an execution state.
+Example:
+You have a list: 1 2 3
+the first iterate call will return CNM_ReturnTypes.BUSY and object = 1
+the second iterate call will return CNM_ReturnTypes.BUSY and object = 2
+the third iterate call will return CNM_ReturnTypes.SUCCESS and object = 3
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+
+*)
+METHOD iterate : CNM_ReturnTypes.SingleExecutionState
+VAR_INPUT
+	(*control bit to start or abort the iterate*)
+	execute	: BOOL;
+END_VAR
+VAR_OUTPUT
+	(*the returned object of the iteration*)
+	line	: ILine;
+END_VAR
+VAR
+	tmp : IObject;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[iterate := THIS^.list.iterate(execute := execute, object => tmp);
+__QUERYINTERFACE(tmp, line);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="pop" Id="{4f16b8a1-8f09-4946-85c0-18b8451b469a}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This property returns the last object in the list and removes it from the list. Can be seen as opposite of append.
+Example:
+On a list: (Head -->) A B C, list.pop will return C.
+Example 2:
+If you call append(x), a pop right after will return x.
+May return a null pointer if list is empty
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+METHOD pop : ILine
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[__QUERYINTERFACE(THIS^.list.pop(), pop);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="prepend" Id="{a29599cd-ea2a-45c5-9cd5-6808ca9e13d5}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This methode adds the given obejct to the end of the list.
+Example: 
+Given a list that looks like this: (Head->) A B C (<- End),
+calling prepend(D) on this list will place the D at start,
+making it the new Head: (Head->) D A B C (<- End)
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``SingleExecutionResult.SUCCESS``: prepend was successful
+	``SingleExecutionResult.ERROR``: allocation of memory for new object failed
+	
+*)
+METHOD prepend : CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*The object to be prepended*)
+	line	: ILine;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[prepend := THIS^.list.prepend(object := line);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="prependCollection" Id="{b5c5b302-ca05-493f-aab6-a0ef8ae307fc}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This methode adds all elements of the given collection to the start of this list. 
+Example:
+For the list1: A B C and list2: D E F will be after list1.prependCollection(list2):
+D E F A B C. Notice the elements are still in the same order they where befor on each subsection.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``SingleExecutionResult.SUCCESS``: prependCollection was successful
+	``SingleExecutionResult.ERROR``: could not allocate memory for all new elements, list is left unchanged
+
+*)
+METHOD prependCollection : CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*The collection to be prepended*)
+	collectionToPrepend	: CNM_CollectionInterfaces.ICollection;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[prependCollection := THIS^.list.prependCollection(collectionToPrepend := collectionToPrepend);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="remove" Id="{56668ef7-6583-4672-bf47-952e7b8805f5}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This methode removes the first instance of the given object from the list.
+Compares objects with hash value.
+For example a Linked List: A B C A A D will on remove(A) becomes: B C A A D
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+
+*)
+METHOD remove
+VAR_INPUT
+	(*The object to be removed from the list*)
+	line	: ILine;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.list.remove(object := line);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="removeLineAt" Id="{121d0344-1d7b-4260-b99a-adc951aa8da4}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This methode removes the element at the given index. 
+Will shift the remaining data to the left (no empty space in list)
+List Length will be decremented.
+Example:
+A list of: 1 2 3 after list.removeObjectAt(1) will become: 1 3 and return IndexBounds.IN_BOUNDS
+Example 2:
+A list of: 1 2 3 after list.removeObjectAt(3) will reamin: 1 2 3 and return IndexBounds.OUT_OF_BOUNDS
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``SingleExecutionResult.SUCCESS``: Element removed from index
+    ``SingleExecutionResult.ERROR``: index out of bound, no object removed
+
+*)
+METHOD removeLineAt : CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*the index to remove the object from*)
+	index	: __XWORD;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[removeLineAt := THIS^.list.removeObjectAt(index := index);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="replaceLineAt" Id="{37f4d5cb-7445-4bf8-9053-ca090cac4009}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This methode replaces the Interface reference inside the collection at the given index with the given Interface.
+Example:
+A list of: 1 2 3 after list.replaceObjectAt(1, withObject:=4) will become: 1 4 3 and return SingleExecutionResult.SUCCESS
+Example 2:
+A list of: 1 2 3 after list.replaceObjectAt(3, withObject:=4) will remain: 1 2 3 and return SingleExecutionResult.ERROR
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``SingleExecutionResult.SUCCESS``: index valid, element at index replaced with ``withObject``
+    ``SingleExecutionResult.ERROR``: ìndex out of bounds, nothing changed
+
+*)
+METHOD replaceLineAt : CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*the index to replace the object at*)
+	index	: __XWORD;
+	(*the object to be at this index instead*)
+	withLine	: ILine;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[replaceLineAt := THIS^.list.replaceObjectAt(index := index, withObject := withLine);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="setSorter" Id="{3e5c7620-4a37-44cf-8f4c-a72506d7ae62}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This methode can replace the default sorter for a custom one. Check :ref:`IListSorter`
+Can be used for performant sorting algorithms if more about the data structure is known.
+
+.. attention:: 
+	For implementations: **IListSorter is an empty interface and you should extend it with custom interfaces for each type of list.**
+	For LinkedList see :ref:`ILinkedListSorter`. 
+	Your implementation should then use this extended interface and the setter should check for compability. 
+	
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``THIS^`` :ref:`IList`
+
+*)
+METHOD setSorter : CNM_CollectionInterfaces.ISortable
+VAR_INPUT
+	(*The instance of the sorter to be used to sort the list*)
+	sorter	: CNM_CollectionInterfaces.IArrayListSorter;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[setSorter := THIS^.list.setSorter(sorter := sorter);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="size" Id="{9b80adba-7a6f-40c8-989d-c322552f0e2c}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This property returns the number of elements inside this collection.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+PROPERTY size : __XWORD
+]]></Declaration>
+      <Get Name="Get" Id="{3ac1a34d-e753-4766-af5a-4364c6721699}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[size := THIS^.list.size;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="sort" Id="{23a5b5f9-e8ac-4d52-9729-dd962b98cb5e}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This method sorts the data structure. 
+This can take many cycles and should be called until the CNM_ReturnTypes.ExecutionState is no longer ``BUSY``.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``ABORTED``: While sort was pending,execute had a falling edge,
+	``BUSY``: Sort is in progress
+	``ERROR``: Sort was not able to finish (p.e. List changed) call sort(false) to reset
+	``IDLE``: Currently no sort in progress
+	``SUCCESS``: Sorting was finished 
+
+*)
+METHOD sort : CNM_ReturnTypes.SingleExecutionState
+VAR_INPUT
+	(*control bit to start or abort the sorting, needs to be active until the ExecutionState is SUCCESS*)
+	execute	: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[sort := THIS^.list.sort(execute := execute);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="sortWithComparator" Id="{1db1b1f5-d2d8-47be-9b50-a61e9d327c8e}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This method sorts the data structure. 
+It uses the passed Comperator to sort the structure.
+This can take many cycles and should be called until the CNM_ReturnTypes.ExecutionState is no longer ``BUSY``.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``ABORTED``: While sort was pending,execute had a falling edge,
+	``BUSY``: Sort is in progress
+	``ERROR``: Sort was not able to finish (p.e. List changed) call sort(false) to reset
+	``IDLE``: Currently no sort in progress
+	``SUCCESS``: Sorting was finished 
+
+*)
+METHOD sortWithComparator : CNM_ReturnTypes.SingleExecutionState
+VAR_INPUT
+	(*control bit to start or abort the sorting, needs to be active until the ExecutionState is SUCCESS*)
+	execute	: BOOL;
+	(*the comparator that should be used for the sort. Must not be changed while sort is in process*)
+	comparator	: CNM_AbstractObject.IComparator;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[sortWithComparator := THIS^.list.sortWithComparator(execute := execute, comparator := comparator);
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="MAIN" Id="{8dac1940-45d9-4843-9f5a-dd2ef684bca8}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	day01 :Day01Solution(sNetId := LocalIoAddresses.NetId, folderPath := LocalIoAddresses.Path, inputFile := 'day01.txt', outputFile := 'solution.txt');
+	day02 :Day02Solution(sNetId := LocalIoAddresses.NetId, folderPath := LocalIoAddresses.Path, inputFile := 'day02.txt', outputFile := 'solution.txt');
+	day03 :Day03Solution(sNetId := LocalIoAddresses.NetId, folderPath := LocalIoAddresses.Path, inputFile := 'day03.txt', outputFile := 'solution.txt');
+	day04 :Day04Solution(sNetId := LocalIoAddresses.NetId, folderPath := LocalIoAddresses.Path, inputFile := 'day04.txt', outputFile := 'solution.txt');
+	day05 :Day05Solution(sNetId := LocalIoAddresses.NetId, folderPath := LocalIoAddresses.Path, inputFile := 'day05.txt', outputFile := 'solution.txt');
+	day06 :Day06Solution(sNetId := LocalIoAddresses.NetId, folderPath := LocalIoAddresses.Path, inputFile := 'day06.txt', outputFile := 'solution.txt');
+	day07 :Day07Solution(sNetId := LocalIoAddresses.NetId, folderPath := LocalIoAddresses.Path, inputFile := 'day07.txt', outputFile := 'solution.txt');
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//some are really slow because I do to few operations each cycle, might take up to 30 seconds to complete!
+day01.run(FALSE);
+day02.run(FALSE);
+day03.run(FALSE); 
+day04.run(FALSE); 
+day05.run(FALSE); 
+day06.run(FALSE); 
+day07.run(FALSE);
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

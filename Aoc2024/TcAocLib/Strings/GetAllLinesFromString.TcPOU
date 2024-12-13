@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="GetAllLinesFromString" Id="{872fe6c7-8620-47e6-817f-7f0ae34a782e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION GetAllLinesFromString :ILineList
+VAR_INPUT
+	text :POINTER TO BYTE;
+	textSize :UDINT;
+	addEmptyLines : BOOL := FALSE;
+END_VAR
+VAR
+	index : UDINT;
+	startLineIndex : UDINT;
+	currentLineText : STRING(255);
+	currentLine :ILine;
+	currentLineObject :IObject;
+	pCurrentLine :POINTER TO Line;
+	pList :POINTER TO LineList;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[pList := __NEW(LineList());
+
+FOR index := 0 TO textSize DO
+	startLineIndex := index;
+	IF(text[index] = 0)THEN
+		EXIT;
+	END_IF
+	WHILE(index < textSize)DO
+		IF(text[index] = 10 OR text[index] = 0)THEN //10 is newLine $N
+			IF(index - startLineIndex > 255)THEN
+				EXIT;
+			END_IF 
+			Tc2_System.MEMSET(ADR(currentLineText), 0, SIZEOF(currentLineText));
+			Tc2_System.MEMCPY(ADR(currentLineText), text+startLineIndex, index - startLineIndex);
+			IF(Tc2_Standard.LEN(currentLineText) = 0 AND NOT addEmptyLines)THEN
+				EXIT;
+			END_IF
+			pCurrentLine := __NEW(Line());
+			pCurrentLine^.text := currentLineText;
+			pList^.append(pCurrentLine^);
+			EXIT;
+		END_IF
+		index := index+1;
+	END_WHILE
+END_FOR
+
+GetAllLinesFromString := pList^;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

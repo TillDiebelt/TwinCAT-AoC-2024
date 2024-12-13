@@ -1,0 +1,875 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="IStringContainerList" Id="{0d30502c-5a4b-485f-acd3-73f4604d6f9d}">
+    <Declaration><![CDATA[INTERFACE IStringContainerList EXTENDS CNM_AbstractObject.IObject
+]]></Declaration>
+    <Method Name="append" Id="{244b531b-be36-4cc0-95e0-00166b6bcd41}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This methode adds the given CNM_AbstractObject.IObject to the end of the list.
+Example: 
+Given a list that looks like this: (Head->) A B C (<- End),
+calling append(D) on this list will place the D at the and,
+making it the new End: (Head->) A B C D(<- End)
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+
+*)
+METHOD append : CNM_CollectionInterfaces.CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*The object to be appended*)
+	stringcontainer	: IStringContainer;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="appendCollection" Id="{e7a2e4f8-18aa-40ab-b9ae-a78d3d0ff2a6}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This methode adds all elements of the given collection to the end of this list.
+Example:
+For the list1: A B C and list2: D E F will be after list1.appendCollection(list2):
+A B C D E F. Notice the elements are still in the same order they where befor on each subsection.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+
+*)
+METHOD appendCollection : CNM_CollectionInterfaces.CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*The collection to be appended*)
+	collectionToAppend	: CNM_CollectionInterfaces.ICollection;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="clear" Id="{34532452-3782-4944-b667-2625d8580256}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This methode clears/deletes all clearable data from this object.
+Example:
+A list: 1 2 3 after list.clear() will have no remaining items, isEmpty = true.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+
+*)
+METHOD clear
+]]></Declaration>
+    </Method>
+    <Method Name="containsEqualStringContainer" Id="{3e98baad-f3d7-4b9e-86f1-f2776047c5c7}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This methode checks if a given object is contained in the collection. 
+The object is inside if the collection contains an object where the default comperator of the objects returns EQUAL on compareTo!
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``FALSE``: list does not contain an equal object
+    ``TRUE``: list does contain an equal object
+
+*)
+METHOD containsEqualStringContainer : BOOL
+VAR_INPUT
+	(*the object to be checked if it exists inside the collection*)
+	stringcontainer	: IStringContainer;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="containsStringContainer" Id="{73f2278f-f37f-4bfd-b5ce-b240ed57634d}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This methode checks if a given object is contained in the collection. 
+The object is inside if the collection contains an object of equal hashcode!
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``FALSE``: list does not contain given object,
+    ``TRUE``: list does contain given object
+
+*)
+METHOD containsStringContainer : BOOL
+VAR_INPUT
+	(*the object to be checked if it exists inside the collection*)
+	stringcontainer	: IStringContainer;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="dequeue" Id="{056d6a74-2637-4eef-b981-542084bab0da}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This property returns the last object in the first and removes it from the list. Can be seen as opposite of prepend.
+Example:
+On a list: (Head -->) A B C, list.dequeue will return A.
+Example 2:
+If you call prepend(x), a dequeue right after will return x.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+METHOD dequeue : IStringContainer
+]]></Declaration>
+    </Method>
+    <Method Name="forEach" Id="{8fa3e837-e094-4b57-bda1-0c3f4203987f}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+Method to perform a given action on all objects inside the collection.
+Needs to reset the execution flag between calls.
+Action to perform needs to implement :ref:`IApplier`.
+Example:
+You have a list of numbers: 1 2 3 and a ConcreteIncrementApplier that can take  a number and increment it. 
+Calling list.forEach(TRUE, ConcreteIncrementApplier) will increment all numbers in the list, becoming: 2 3 4.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=========================
+:return: CNM_ReturnTypes.ExecutionState
+
+*)
+METHOD forEach : CNM_CollectionInterfaces.CNM_ReturnTypes.SingleExecutionState
+VAR_INPUT
+	(*control bit to start or abort the forEach loop*)
+	execute	: BOOL;
+	(*the applier (action) to be used on all obejcts in the collection*)
+	applier	: CNM_CollectionInterfaces.IApplier;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="getIndexOf" Id="{cbe6a438-533c-4396-bdd4-8cffc0170a20}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This methode returns ths index of the first object that is equal to the given.
+Example:
+A list of: 1 2 3 after list.getIndexOf(1) will return: index=>0 and return IndexBounds.IN_BOUNDS
+Example 2:
+A list of: 1 2 3 after list.getIndexOf(4) will return: index=>3 and return IndexBounds.OUT_OF_BOUNDS
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``SingleExecutionResult.SUCCESS``: object found
+    ``SingleExecutionResult.ERROR``: object couldn't be found in the list, index is undefined
+
+*)
+METHOD getIndexOf : CNM_CollectionInterfaces.CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*the object to get the index from*)
+	stringcontainer	: IStringContainer;
+END_VAR
+VAR_OUTPUT
+	(*the index of the object inside the collection*)
+	index	: __XWORD;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="getStringContainerAt" Id="{d9d1d24b-27e6-4afd-bddf-3616687b1af9}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This methode returns the object at the given index.
+Returned objects can be modified, but not replaced! To replace an object use replaceObjectAt.
+Example:
+A list of: 1 2 3 after list.getObjectAt(1) will return: object=>2 and return SingleExecutionResult.SUCCESS
+Example 2:
+A list of: 1 2 3 after list.getObjectAt(3) will return: object=>NULL and return SingleExecutionResult.ERROR
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``SingleExecutionResult.SUCCESS``: index was valid
+    ``SingleExecutionResult.ERROR``: index was not valid, returned object is undefined
+
+*)
+METHOD getStringContainerAt : CNM_CollectionInterfaces.CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*the index to access the object from*)
+	index	: __XWORD;
+END_VAR
+VAR_OUTPUT
+	(*the object at the given index*)
+	stringcontainer	: IStringContainer;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Property Name="hasElement" Id="{891c3064-e919-493c-9857-8ef9414621ea}">
+      <Declaration><![CDATA[{warning 'Add property implementation'}
+(*
+
+short summary
+=================
+This property returns ``TRUE`` if the collection has any element.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+PROPERTY hasElement : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{45bda7ea-e205-4cc1-8d91-8425cdea2830}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Method Name="insertStringContainerAt" Id="{e8d98fd3-d297-4a0b-8e35-94c5da1cdc1e}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This methode adds the given object at the given index. 
+Will shift the other data starting at given index to the right.
+List Lenght will be incremented.
+Example:
+A list of: 1 2 3 after list.insertObjectAt(1, object:=4) will become: 1 4 2 3 and return SingleExecutionResult.SUCCESS
+Example 2:
+A list of: 1 2 3 after list.insertObjectAt(3, object:=4) will become: 1 2 3 4 and return SingleExecutionResult.SUCCESS
+Example 3:
+A list of: 1 2 3 after list.insertObjectAt(5, object:=4) will become: 1 2 3 and return SingleExecutionResult.ERROR
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``SingleExecutionResult.SUCCESS``: index was valid, object inserted
+    ``SingleExecutionResult.ERROR``: index out of bounds, list not changed
+
+*)
+METHOD insertStringContainerAt : CNM_CollectionInterfaces.CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*the index to insert the object at*)
+	index	: __XWORD;
+	(*the object to be added*)
+	stringcontainer	: IStringContainer;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="inverseSort" Id="{d1e85290-1945-4318-b6ce-70b0678952df}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This method sorts the Sortable in the inverted order, so from great to low
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=========================
+:return: ``ABORTED``: While inverse was pending,execute had a falling edge,
+	``BUSY``: Inverse is in progress
+	``ERROR``: Inverse was not able to finish (p.e. List changed) call inverse(false) to reset
+	``IDLE``: Currently invert is not in progress
+	``SUCCESS``: Inversing was finished 
+*)
+METHOD inverseSort : CNM_CollectionInterfaces.CNM_ReturnTypes.SingleExecutionState
+VAR_INPUT
+	(*control bit to start or abort the inverting, needs to be active until the ExecutionState is noz longer busy*)
+	execute	: BOOL;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="invert" Id="{cd4d3c3d-7040-4e2f-99b6-9cdc60911b25}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+Inverts the order of the elements inside the object. Does not apply any kind of sorting, only reverses.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=========================
+
+*)
+METHOD invert
+]]></Declaration>
+    </Method>
+    <Property Name="isEmpty" Id="{5650b0c9-aa8e-46cb-a5e7-ea70aae0488f}">
+      <Declaration><![CDATA[{warning 'Add property implementation'}
+(*
+
+short summary
+=================
+This property returns ``TRUE`` if the collection is empty.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+PROPERTY isEmpty : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{0d809b9a-d55e-47e2-a9e1-fbd9fefebc11}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Method Name="iterate" Id="{7fb1e0d1-39a7-4570-b694-b0902448a69e}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This methode returns the next object in the iteration and returns an execution state.
+Example:
+You have a list: 1 2 3
+the first iterate call will return CNM_ReturnTypes.BUSY and object = 1
+the second iterate call will return CNM_ReturnTypes.BUSY and object = 2
+the third iterate call will return CNM_ReturnTypes.SUCCESS and object = 3
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+
+*)
+METHOD iterate : CNM_CollectionInterfaces.CNM_ReturnTypes.SingleExecutionState
+VAR_INPUT
+	(*control bit to start or abort the iterate*)
+	execute	: BOOL;
+END_VAR
+VAR_OUTPUT
+	(*the returned object of the iteration*)
+	stringcontainer	: IStringContainer;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="pop" Id="{aa8af7dd-01ca-4246-87fa-263f0bda6efb}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This property returns the last object in the list and removes it from the list. Can be seen as opposite of append.
+Example:
+On a list: (Head -->) A B C, list.pop will return C.
+Example 2:
+If you call append(x), a pop right after will return x.
+May return a null pointer if list is empty
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+METHOD pop : IStringContainer
+]]></Declaration>
+    </Method>
+    <Method Name="prepend" Id="{b94e13f9-686a-4329-a2e6-9eb9a00aed76}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This methode adds the given obejct to the end of the list.
+Example: 
+Given a list that looks like this: (Head->) A B C (<- End),
+calling prepend(D) on this list will place the D at start,
+making it the new Head: (Head->) D A B C (<- End)
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``SingleExecutionResult.SUCCESS``: prepend was successful
+	``SingleExecutionResult.ERROR``: allocation of memory for new object failed
+	
+*)
+METHOD prepend : CNM_CollectionInterfaces.CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*The object to be prepended*)
+	stringcontainer	: IStringContainer;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="prependCollection" Id="{b4d22be9-63b0-41ee-b167-e5faec6b3aae}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This methode adds all elements of the given collection to the start of this list. 
+Example:
+For the list1: A B C and list2: D E F will be after list1.prependCollection(list2):
+D E F A B C. Notice the elements are still in the same order they where befor on each subsection.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``SingleExecutionResult.SUCCESS``: prependCollection was successful
+	``SingleExecutionResult.ERROR``: could not allocate memory for all new elements, list is left unchanged
+
+*)
+METHOD prependCollection : CNM_CollectionInterfaces.CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*The collection to be prepended*)
+	collectionToPrepend	: CNM_CollectionInterfaces.ICollection;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="remove" Id="{af81db6d-b171-42c3-9264-08f115613726}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This methode removes the first instance of the given object from the list.
+Compares objects with hash value.
+For example a Linked List: A B C A A D will on remove(A) becomes: B C A A D
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+
+*)
+METHOD remove
+VAR_INPUT
+	(*The object to be removed from the list*)
+	stringcontainer	: IStringContainer;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="removeStringContainerAt" Id="{58356058-f5c1-4934-b0e7-5a1ae116a42b}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This methode removes the element at the given index. 
+Will shift the remaining data to the left (no empty space in list)
+List Length will be decremented.
+Example:
+A list of: 1 2 3 after list.removeObjectAt(1) will become: 1 3 and return IndexBounds.IN_BOUNDS
+Example 2:
+A list of: 1 2 3 after list.removeObjectAt(3) will reamin: 1 2 3 and return IndexBounds.OUT_OF_BOUNDS
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``SingleExecutionResult.SUCCESS``: Element removed from index
+    ``SingleExecutionResult.ERROR``: index out of bound, no object removed
+
+*)
+METHOD removeStringContainerAt : CNM_CollectionInterfaces.CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*the index to remove the object from*)
+	index	: __XWORD;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="replaceStringContainerAt" Id="{d61f97f5-f1b3-46d8-b196-b9d3cf9059f4}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This methode replaces the Interface reference inside the collection at the given index with the given Interface.
+Example:
+A list of: 1 2 3 after list.replaceObjectAt(1, withObject:=4) will become: 1 4 3 and return SingleExecutionResult.SUCCESS
+Example 2:
+A list of: 1 2 3 after list.replaceObjectAt(3, withObject:=4) will remain: 1 2 3 and return SingleExecutionResult.ERROR
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``SingleExecutionResult.SUCCESS``: index valid, element at index replaced with ``withObject``
+    ``SingleExecutionResult.ERROR``: ìndex out of bounds, nothing changed
+
+*)
+METHOD replaceStringContainerAt : CNM_CollectionInterfaces.CNM_ReturnTypes.SingleExecutionResult
+VAR_INPUT
+	(*the index to replace the object at*)
+	index	: __XWORD;
+	(*the object to be at this index instead*)
+	withStringContainer	: IStringContainer;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="setSorter" Id="{4bbdd0e2-50ff-4eb8-8844-1f927c6dadbd}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This methode can replace the default sorter for a custom one. Check :ref:`IListSorter`
+Can be used for performant sorting algorithms if more about the data structure is known.
+
+.. attention:: 
+	For implementations: **IListSorter is an empty interface and you should extend it with custom interfaces for each type of list.**
+	For LinkedList see :ref:`ILinkedListSorter`. 
+	Your implementation should then use this extended interface and the setter should check for compability. 
+	
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``THIS^`` :ref:`IList`
+
+*)
+METHOD setSorter : CNM_CollectionInterfaces.ISortable
+VAR_INPUT
+	(*The instance of the sorter to be used to sort the list*)
+	sorter	: CNM_CollectionInterfaces.IArrayListSorter;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Property Name="size" Id="{9616ae0b-8c67-4efa-9000-6384b3f0d800}">
+      <Declaration><![CDATA[{warning 'Add property implementation'}
+(*
+
+short summary
+=================
+This property returns the number of elements inside this collection.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+PROPERTY size : __XWORD
+]]></Declaration>
+      <Get Name="Get" Id="{49c3b799-ef72-40b2-9519-dfa087f359e9}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Method Name="sort" Id="{7a4d3030-e2d6-4afb-9e70-a780cc579e2f}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This method sorts the data structure. 
+This can take many cycles and should be called until the CNM_ReturnTypes.ExecutionState is no longer ``BUSY``.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``ABORTED``: While sort was pending,execute had a falling edge,
+	``BUSY``: Sort is in progress
+	``ERROR``: Sort was not able to finish (p.e. List changed) call sort(false) to reset
+	``IDLE``: Currently no sort in progress
+	``SUCCESS``: Sorting was finished 
+
+*)
+METHOD sort : CNM_CollectionInterfaces.CNM_ReturnTypes.SingleExecutionState
+VAR_INPUT
+	(*control bit to start or abort the sorting, needs to be active until the ExecutionState is SUCCESS*)
+	execute	: BOOL;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="sortWithComparator" Id="{2a3af9fb-e93a-4b7c-bff7-b506349a696c}">
+      <Declaration><![CDATA[{warning 'Add method implementation '}
+(*
+
+short summary
+=================
+This method sorts the data structure. 
+It uses the passed Comperator to sort the structure.
+This can take many cycles and should be called until the CNM_ReturnTypes.ExecutionState is no longer ``BUSY``.
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return: ``ABORTED``: While sort was pending,execute had a falling edge,
+	``BUSY``: Sort is in progress
+	``ERROR``: Sort was not able to finish (p.e. List changed) call sort(false) to reset
+	``IDLE``: Currently no sort in progress
+	``SUCCESS``: Sorting was finished 
+
+*)
+METHOD sortWithComparator : CNM_CollectionInterfaces.CNM_ReturnTypes.SingleExecutionState
+VAR_INPUT
+	(*control bit to start or abort the sorting, needs to be active until the ExecutionState is SUCCESS*)
+	execute	: BOOL;
+	(*the comparator that should be used for the sort. Must not be changed while sort is in process*)
+	comparator	: CNM_CollectionInterfaces.CNM_AbstractObject.IComparator;
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

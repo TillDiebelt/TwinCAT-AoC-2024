@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="LintValue" Id="{b50d48b0-62c3-477e-9d26-ef9dd1de1639}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LintValue EXTENDS Object IMPLEMENTS IHaveLintValue
+VAR
+	myValue :LINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="className" Id="{bea7305d-3ea7-4fd3-8a3b-eb6cb05a397e}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This abstract property returns the class name of the concrete object, 
+which is useful for logging/debugging purpose or to check the class name
+for ``__DELETE`` in factories (sometimes it's necessary to do more 
+than just to free the memory).
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+PROPERTY className : CNM_AbstractObject.ClassName
+]]></Declaration>
+      <Get Name="Get" Id="{c6967a85-b5ea-4b76-aed1-e78ed5436031}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="compareTo" Id="{253fd554-1f10-438a-a7c0-d99de11305c8}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This method compares a foreign object with the own one, this is needed for sort orders.
+The abstract class evaluates every object that is NULL as greater, and all other objects as equal. 
+
+.. attention:: 
+	For derivations: **If a derived class needs sorting this method must be overwritten.** 
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+:return:``SMALLER``: ``THIS`` precedes in order,
+``EQUAL``: ``THIS`` and ``object`` at the same position in order,
+``GREATER``: ``THIS`` is after in order.
+Checkout the library CNM_ReturnTypes.
+
+*)
+METHOD compareTo : CNM_AbstractObject.CNM_ReturnTypes.ComparationResult
+VAR_INPUT
+	(* foreign objet to compare*)
+	object	: CNM_AbstractObject.IObject;
+END_VAR
+VAR
+	other :IHaveValue;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[compareTo := CNM_ReturnTypes.ComparationResult.EQUAL;
+
+RETURN (object = 0);
+
+IF(__QUERYINTERFACE(object, other))THEN
+	IF(THIS^.value > other.value)THEN
+		compareTo := CNM_ReturnTypes.ComparationResult.GREATER;
+	ELSIF(THIS^.value < other.value)THEN
+		compareTo := CNM_ReturnTypes.ComparationResult.SMALLER;
+	END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="value" Id="{56604aac-a7d6-4209-84f5-7ad6a13dc775}">
+      <Declaration><![CDATA[{warning 'Add property implementation'}
+PROPERTY value : LINT
+]]></Declaration>
+      <Get Name="Get" Id="{35edc216-3ece-4c7b-8acb-3fa356d7a56f}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[value := myValue;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{5c4d8ee3-bff7-4727-b305-fef35c2ab27f}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[myValue := value;
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+  </POU>
+</TcPlcObject>

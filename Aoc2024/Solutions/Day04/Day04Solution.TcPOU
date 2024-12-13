@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Day04Solution" Id="{fc636718-abbc-47d7-bafc-60857bbbf169}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Day04Solution EXTENDS AbstractSolver
+VAR	
+	xmases :I2dArray;
+	sizeY :UDINT;
+	sizeX :UDINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="countXMAS" Id="{e1c2b03e-caa6-4810-8a26-a15172a27dd6}">
+      <Declaration><![CDATA[METHOD countXMAS : DINT
+VAR_INPUT
+	x :UDINT;
+	y :UDINT;
+END_VAR
+VAR
+	char :IChar;
+	index :UDINT;
+	valids :ARRAY[0..7] OF BOOL := [8(TRUE)];
+END_VAR
+VAR CONSTANT
+	xmas :STRING(4) := 'XMAS';
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[countXMAS := 0;
+
+RETURN (NOT THIS^.isInBounds(x,y));
+RETURN (NOT __QUERYINTERFACE(THIS^.xmases.getObjectAt(y := y, x := x), char));
+RETURN ((char.charAsByte <> xmas[0]));
+
+FOR index := 1 TO 3 DO
+	valids[0] := valids[0] AND_THEN THIS^.isInBounds(x + index, y) 			AND_THEN toChar(THIS^.xmases.getObjectAt(y,x + index)).charAsByte = xmas[index];
+	valids[1] := valids[1] AND_THEN THIS^.isInBounds(x + index, y + index) 	AND_THEN toChar(THIS^.xmases.getObjectAt(y + index,x + index)).charAsByte = xmas[index];
+	valids[7] := valids[7] AND_THEN THIS^.isInBounds(y + index,x) 			AND_THEN toChar(THIS^.xmases.getObjectAt(y + index,x)).charAsByte = xmas[index];
+	valids[4] := valids[4] AND_THEN THIS^.isInBounds(x - index, y + index)	AND_THEN toChar(THIS^.xmases.getObjectAt(y + index,x - index)).charAsByte = xmas[index];
+	valids[2] := valids[2] AND_THEN THIS^.isInBounds(x - index, y) 			AND_THEN toChar(THIS^.xmases.getObjectAt(y,x - index)).charAsByte = xmas[index];
+	valids[3] := valids[3] AND_THEN THIS^.isInBounds(x - index, y - index) 	AND_THEN toChar(THIS^.xmases.getObjectAt(y - index,x - index)).charAsByte = xmas[index];
+	valids[6] := valids[6] AND_THEN THIS^.isInBounds(x, y - index) 			AND_THEN toChar(THIS^.xmases.getObjectAt(y - index,x)).charAsByte = xmas[index];
+	valids[5] := valids[5] AND_THEN THIS^.isInBounds(x + index, y - index) 	AND_THEN toChar(THIS^.xmases.getObjectAt(y - index,x + index)).charAsByte = xmas[index];
+END_FOR
+
+FOR index := 0 TO 7 DO
+	IF(valids[index])THEN
+		countXMAS := countXMAS + 1;
+	END_IF
+END_FOR
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="isInBounds" Id="{2cd53307-cbe3-4445-bdb4-7ba9d34805fe}">
+      <Declaration><![CDATA[METHOD isInBounds : BOOL
+VAR_INPUT
+	x :UDINT;
+	y :UDINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[isInBounds := (x < THIS^.sizeX AND y < THIS^.sizeY); //cheat >= 0 by UDINT overflow
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="isX" Id="{1e6c4cb4-3439-4e94-b518-a6a41865b0ee}">
+      <Declaration><![CDATA[METHOD isX : BOOL
+VAR_INPUT
+	x :UDINT;
+	y :UDINT;
+END_VAR
+VAR
+	char :IChar;
+	index :UDINT;
+END_VAR
+VAR CONSTANT
+	xmas :STRING(4) := 'XMAS';
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[RETURN (NOT THIS^.isInBounds(x,y));
+RETURN (NOT __QUERYINTERFACE(THIS^.xmases.getObjectAt(y := y, x := x), char));
+RETURN ((char.charAsByte <> xmas[2]));
+RETURN (NOT (THIS^.isInBounds(x-1,y-1) AND THIS^.isInBounds(x+1,y-1) AND THIS^.isInBounds(x-1,y+1) AND THIS^.isInBounds(x+1,y+1)));
+
+isX := (
+			(toChar(THIS^.xmases.getObjectAt(y + 1,x + 1)).charAsString = 'M' 
+			AND_THEN toChar(THIS^.xmases.getObjectAt(y -1 ,x - 1)).charAsString = 'S')
+		OR
+			(toChar(THIS^.xmases.getObjectAt(y + 1,x + 1)).charAsString = 'S' 
+			AND_THEN toChar(THIS^.xmases.getObjectAt(y -1 ,x - 1)).charAsString = 'M')
+	) AND (
+			(toChar(THIS^.xmases.getObjectAt(y + 1,x - 1)).charAsString = 'M' 
+			AND_THEN toChar(THIS^.xmases.getObjectAt(y -1 ,x + 1)).charAsString = 'S')
+		OR
+			(toChar(THIS^.xmases.getObjectAt(y + 1,x - 1)).charAsString = 'S' 
+			AND_THEN toChar(THIS^.xmases.getObjectAt(y -1 ,x + 1)).charAsString = 'M')
+	);
+	]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="solve" Id="{3f03fb47-e109-40f8-a21a-66729e1c9f12}">
+      <Declaration><![CDATA[METHOD solve
+VAR_INPUT
+	step	: DINT;
+END_VAR
+VAR_INST
+	pathInserted :BOOL;
+	sum : DINT;
+END_VAR
+VAR
+	lineText :Tc2_System.T_MaxString;
+	tmpObj :CNM_AbstractObject.IObject;
+	char :IChar;
+	pChar :POINTER TO CharObj;
+	pXmas :POINTER TO Dynamic2dArray;
+	curChar :STRING(1);
+	index : DINT;
+	indexY : DINT;
+	currentLine :ILine;
+	currentLineObject :IObject;
+END_VAR
+VAR CONSTANT
+	READ_INPUT :DINT := 2;
+	GET_LINES :DINT := READ_INPUT + 1;
+	PARSE :DINT := GET_LINES + 1;
+	SOLVE_PART1 :DINT := PARSE + 1;
+	RESET_FOR_PART2 :DINT := SOLVE_PART1 + 1;
+	SOLVE_PART2 :DINT := RESET_FOR_PART2 + 1;
+	APPEND_SOLUTION :DINT := SOLVE_PART2 + 1;
+	WRITE_SOLUTION :DINT := APPEND_SOLUTION + 1;
+	CLEAN_UP :DINT := WRITE_SOLUTION + 1;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE step OF
+PARSE:		
+	lines.getLineAt(0, line => currentLine);
+	sizeY := TO_UDINT(lines.size);
+	sizeX := LEN(currentLine.text);
+	pXmas := __NEW(Dynamic2dArray(sizeDim1 := sizeY, sizeDim2 := sizeX));
+	RETURN (NOT __QUERYINTERFACE(pXmas^,xmases));
+	THIS^.lines.iterate(execute := FALSE);
+	indexY := 0;
+	WHILE(THIS^.lines.iterate(execute := TRUE, line => currentLine) = CNM_ReturnTypes.SingleExecutionState.BUSY)DO
+		FOR index := 0 TO sizeX DO
+			lineText := currentLine.text;
+			curChar := F_ToCHR(lineText[index]);
+			pChar := __NEW(CharObj(char := curChar));
+			xmases.setObjectAt(y := indexY, x := index, pChar^);
+		END_FOR
+		indexY := indexY+1;
+	END_WHILE
+	cm.proceed();	
+SOLVE_PART1:
+	FOR indexY := 0 TO sizeY DO
+		FOR index := 0 TO sizeX DO
+			sum := sum + THIS^.countXMAS(x := index, y := indexY);
+		END_FOR
+	END_FOR	
+	cm.proceed();
+RESET_FOR_PART2:
+	THIS^.bufferWrite := Concat(TO_STRING(sum), '$n');
+	sum := 0;
+	cm.proceed();
+SOLVE_PART2:
+	FOR indexY := 0 TO sizeY DO
+		FOR index := 0 TO sizeX DO
+			sum := sum + SEL(THIS^.isX(index, indexY), 0, 1);
+		END_FOR
+	END_FOR		
+	cm.proceed();
+APPEND_SOLUTION:
+	THIS^.bufferWrite :=Concat(THIS^.bufferWrite, Concat(TO_STRING(sum), '$n'));
+	cm.proceed();
+WRITE_SOLUTION:
+	THIS^.writeSolution();
+CLEAN_UP:
+	cm.step.next := CNM_ReturnTypes.DefaultSteps.STEP.SUCCESS;
+	lines.deepDestruct();
+	xmases.deepDestruct();
+	cm.proceed();
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="toChar" Id="{c92a1fe2-31e5-4d10-99f3-c5b98811e63c}">
+      <Declaration><![CDATA[METHOD toChar : IChar
+VAR_INPUT
+	obj : CNM_AbstractObject.IObject;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[__QUERYINTERFACE(obj, toChar);
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

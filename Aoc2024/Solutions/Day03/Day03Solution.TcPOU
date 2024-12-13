@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Day03Solution" Id="{0953c1d5-e996-4bf7-b517-c2190f11931e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Day03Solution EXTENDS AbstractSolver
+VAR
+	sumCollector :SumCollectorLINT();
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="solve" Id="{a91db24d-f28f-413a-aa7e-3b6f32b91e15}">
+      <Declaration><![CDATA[METHOD solve
+VAR_INPUT
+	step	: DINT;
+END_VAR
+VAR_INST
+	pathInserted :BOOL;
+	instructions :CNM_Collections.ArrayList(100);
+END_VAR
+VAR
+	parsed :CNM_CycleManagerInterfaces.ISingleAttempt;	
+	tmpObj :CNM_AbstractObject.IObject;
+	instruction :CNM_CycleManagerInterfaces.ISingleAttempt;	
+	index : UDINT;
+	currentLine :ILine;
+	currentLineObject :IObject;
+END_VAR
+VAR CONSTANT
+	READ_INPUT :DINT := 2;
+	GET_LINES :DINT := READ_INPUT + 1;
+	PARSE :DINT := GET_LINES + 1;
+	SOLVE_PART1 :DINT := PARSE + 1;
+	RESET_FOR_PART2 :DINT := SOLVE_PART1 + 1;
+	SOLVE_PART2 :DINT := RESET_FOR_PART2 + 1;
+	APPEND_SOLUTION :DINT := SOLVE_PART2 + 1;
+	WRITE_SOLUTION :DINT := APPEND_SOLUTION + 1;
+	CLEAN_UP :DINT := WRITE_SOLUTION + 1;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE step OF
+PARSE:	
+	FOR(index := 0) TO SIZEOF(THIS^.bufferRead) DO
+		IF(THIS^.bufferRead[index] = 0)THEN
+			EXIT;
+		END_IF
+		IF(THIS^.tryParseInstruction(ADR(THIS^.bufferRead), SIZEOF(THIS^.bufferRead), index, instruction => parsed))THEN			
+			instructions.append(parsed);
+		END_IF			
+	END_FOR
+	cm.proceed();	
+SOLVE_PART1:
+	cm.evaluate(instructions.iterate(cm.executeStep, object => tmpObj));
+	IF(__QUERYINTERFACE(tmpObj, instruction))THEN
+		IF(instruction.className = 'MulInstruction')THEN
+			instruction.invoke();
+		END_IF
+	END_IF		
+RESET_FOR_PART2:
+	THIS^.bufferWrite := Concat(TO_STRING(sumCollector.sum), '$n');
+	sumCollector.sum := 0;
+	cm.proceed();
+SOLVE_PART2:
+	cm.evaluate(instructions.iterate(cm.executeStep, object => tmpObj));
+	IF(__QUERYINTERFACE(tmpObj, instruction))THEN
+		instruction.invoke();
+	END_IF		
+APPEND_SOLUTION:
+	THIS^.bufferWrite :=Concat(THIS^.bufferWrite, Concat(TO_STRING(sumCollector.sum), '$n'));
+	cm.proceed();
+WRITE_SOLUTION:
+	THIS^.writeSolution();
+CLEAN_UP:
+	cm.step.next := CNM_ReturnTypes.DefaultSteps.STEP.SUCCESS;
+	lines.deepDestruct();
+	instructions.deepDestruct();
+	cm.proceed();
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="tryParseInstruction" Id="{7555d446-ac7b-478a-a693-bea77b5db9b1}">
+      <Declaration><![CDATA[METHOD tryParseInstruction : BOOL
+VAR_INPUT
+	text :POINTER TO BYTE;
+	maxIndex :UDINT;
+END_VAR
+VAR_IN_OUT
+	index :UDINT;
+END_VAR
+VAR_OUTPUT
+	instruction :CNM_CycleManagerInterfaces.ISingleAttempt;
+END_VAR
+VAR CONSTANT
+	mulStart :STRING :='mul(';
+	doStart :STRING :='do()';
+	doNotStart :STRING :='don$'t()';	
+	digits :STRING :='0123456789';
+	comma :STRING :=',';
+	closedbracket :STRING :=')';
+END_VAR
+VAR
+	validNum :BOOL := FALSE;
+	numIndex :UDINT := 0;
+	num1 :LINT;
+	num2 :LINT;
+	mulInst :POINTER TO MulInstruction;
+	doInst :POINTER TO DoInstruction;
+	doNotInst :POINTER TO DontInstruction;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//parsing in TwinCAT is no fun without better libraries
+tryParseInstruction := FALSE;
+
+IF(index + 8 < maxIndex 
+	AND_THEN text[index] = mulStart[0] 
+	AND_THEN text[index+1] = mulStart[1]
+	AND_THEN text[index+2] = mulStart[2]
+	AND_THEN text[index+3] = mulStart[3]
+)THEN
+	WHILE(index + 4 + numIndex < maxIndex AND_THEN text[index+4+numIndex] >= digits[0] AND_THEN text[index+4+numIndex] <= digits[9])DO
+		validNum := TRUE;
+		num1 := num1 * 10 + (text[index+4+numIndex] -48);
+		numIndex := numIndex + 1;
+	END_WHILE
+	RETURN (NOT validNum);
+	RETURN (text[index+4+numIndex] <> comma[0]);
+	numIndex := numIndex + 1;
+	validNum := FALSE;
+	WHILE(index + 4 + numIndex < maxIndex AND_THEN text[index+4+numIndex] >= digits[0] AND_THEN text[index+4+numIndex] <= digits[9])DO
+		validNum := TRUE;
+		num2 := num2 * 10 + (text[index+4+numIndex] -48);
+		numIndex := numIndex + 1;
+	END_WHILE
+	RETURN (NOT validNum);
+	RETURN (text[index+4+numIndex] <> closedbracket[0]);
+	mulInst := __NEW(MulInstruction(left := num1, right := num2, collector := THIS^.sumCollector));
+	RETURN (NOT __QUERYINTERFACE(mulInst^, instruction));
+	tryParseInstruction := TRUE;
+ELSIF(index + 7 < maxIndex 
+	AND_THEN text[index] = doNotStart[0] 
+	AND_THEN text[index+1] = doNotStart[1]
+	AND_THEN text[index+2] = doNotStart[2]
+	AND_THEN text[index+3] = doNotStart[3]
+	AND_THEN text[index+4] = doNotStart[4]
+	AND_THEN text[index+5] = doNotStart[5]
+	AND_THEN text[index+6] = doNotStart[6]
+)THEN
+	doNotInst := __NEW(DontInstruction(collector := THIS^.sumCollector));
+	RETURN (NOT __QUERYINTERFACE(doNotInst^, instruction));
+	tryParseInstruction := TRUE;
+ELSIF(index + 7 < maxIndex 
+	AND_THEN text[index] = doStart[0] 
+	AND_THEN text[index+1] = doStart[1]
+	AND_THEN text[index+2] = doStart[2]
+	AND_THEN text[index+3] = doStart[3]
+)THEN
+	doInst := __NEW(DoInstruction(collector := THIS^.sumCollector));
+	RETURN (NOT __QUERYINTERFACE(doInst^, instruction));
+	tryParseInstruction := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

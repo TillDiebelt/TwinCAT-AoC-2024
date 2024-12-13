@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="CharObj" Id="{592b4547-07ae-4540-8585-0a3d4715c1ac}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'enable_dynamic_creation'}
+FUNCTION_BLOCK CharObj EXTENDS Object IMPLEMENTS IChar
+VAR
+	myChar : STRING(1);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="charAsByte" Id="{3be2238c-f35a-44a4-853e-2ab47b91f317}">
+      <Declaration><![CDATA[PROPERTY charAsByte : Byte]]></Declaration>
+      <Get Name="Get" Id="{858c2c2f-264b-4b20-a5de-a4674b5e655e}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[charAsByte := THIS^.myChar[0];
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="charAsString" Id="{42b63835-17f9-4b19-b60e-03e52f0e8c6e}">
+      <Declaration><![CDATA[PROPERTY charAsString : STRING(1)]]></Declaration>
+      <Get Name="Get" Id="{251867b7-16ee-48a1-ac08-89358cef8cc2}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[charAsString := THIS^.myChar;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="className" Id="{e12a529e-f0e1-46ad-8d2e-f80b575deb71}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This abstract property returns the class name of the concrete object, 
+which is useful for logging/debugging purpose or to check the class name
+for ``__DELETE`` in factories (sometimes it's necessary to do more 
+than just to free the memory).
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+PROPERTY className : CNM_AbstractObject.ClassName
+]]></Declaration>
+      <Get Name="Get" Id="{0c01c2b0-bc0e-4297-8f3c-3b95275b3fb6}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[className := 'CharObj';]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="FB_init" Id="{751614d4-955a-4c56-87bf-e33d2435bf98}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+The constructor ``FB_init`` is needed to create an unique hash code.
+The hash code is a pseudo random number create with a xorshift_ algorithm.
+It can be overwritten on derivations, because it will be called implicit, ``SUPER^.FB_init()`` is not required.
+For more information check: `Behavoir with derived function blocks`_
+
+.. _Behavoir with derived function blocks: https://infosys.beckhoff.com/content/1033/tc3_plc_intro/5482088715.html?id=6983869892358031022
+.. _xorshift: https://en.wikipedia.org/wiki/Xorshift
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+
+*)
+METHOD FB_init : BOOL
+VAR_INPUT
+	(* if TRUE, the retain variables are initialized (warm start / cold start)*)
+	bInitRetains	: BOOL;
+	(* if TRUE, the instance afterwards gets moved into the copy code (online change) *)
+	bInCopyCode	: BOOL;
+	char :STRING(1);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.myChar := char;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="ISumCollector" Id="{9423d3f1-8ee5-419c-8020-86e79515db95}">
+    <Declaration><![CDATA[INTERFACE ISumCollector
+]]></Declaration>
+    <Method Name="addValue" Id="{7b44a895-3cdf-4088-a928-8786d14bbdbf}">
+      <Declaration><![CDATA[METHOD addValue
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Property Name="sum" Id="{0ed31d92-c052-4d73-971e-507d8cf647ce}">
+      <Declaration><![CDATA[PROPERTY sum : LINT]]></Declaration>
+      <Get Name="Get" Id="{5e68f898-8ecd-463b-9996-2c7b4db4f021}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{3d1ce1e6-d6a9-4459-aae3-337db5d6fd38}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+      </Set>
+    </Property>
+  </Itf>
+</TcPlcObject>

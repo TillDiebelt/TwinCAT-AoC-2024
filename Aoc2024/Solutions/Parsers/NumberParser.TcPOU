@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="NumberParser" Id="{cfdcda8a-bcc1-4037-8526-0f57067a58c6}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK NumberParser
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="getAllNumbers" Id="{7259796b-a111-465c-8116-fa99bf12a731}">
+      <Declaration><![CDATA[METHOD getAllNumbers : IArrayList
+VAR_INPUT
+	container :CNM_AoC.IStringContainer;
+END_VAR
+VAR
+	index : DINT;
+	currentParseValue :DINT;
+	currentLineText : STRING(255);
+	found :BOOL;
+	result :CNM_CollectionInterfaces.IArrayList;
+	pResult :POINTER TO CNM_Collections.ArrayList;
+	pValue :POINTER TO CNM_AoC.Value;
+	value :CNM_AoC.IHaveValue;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[pResult := __NEW(ArrayList(initialSize := 2));
+__QUERYINTERFACE(pResult^, result);
+currentLineText := container.text;
+
+FOR index := 0 TO LEN(container.text)-1 DO
+	IF(currentLineText[index] >= 48 AND currentLineText[index] <= 57)THEN
+		currentParseValue := currentParseValue * 10;
+		currentParseValue := currentParseValue + currentLineText[index]-48;
+		found := TRUE;
+	ELSE
+		IF(found)THEN
+			pValue := __NEW(Value);
+			__QUERYINTERFACE(pValue^, value);
+			value.value := currentParseValue;//add num to result
+			result.append(value);
+		END_IF
+		currentParseValue := 0;
+		found := FALSE;
+	END_IF
+END_FOR	
+
+IF(found)THEN
+	pValue := __NEW(Value);
+	__QUERYINTERFACE(pValue^, value);
+	value.value := currentParseValue;//add num to result
+	result.append(value);
+END_IF
+
+getAllNumbers := result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="getAllNumbersLint" Id="{252b265c-a308-48d5-8fca-ca20c720dc02}">
+      <Declaration><![CDATA[METHOD getAllNumbersLint : IArrayList
+VAR_INPUT
+	container :CNM_AoC.IStringContainer;
+END_VAR
+VAR
+	index : DINT;
+	currentParseValue :LINT;
+	currentLineText : STRING(255);
+	found :BOOL;
+	result :CNM_CollectionInterfaces.IArrayList;
+	pResult :POINTER TO CNM_Collections.ArrayList;
+	pValue :POINTER TO CNM_AoC.LintValue;
+	value :CNM_AoC.IHaveLintValue;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[pResult := __NEW(ArrayList(initialSize := 2));
+__QUERYINTERFACE(pResult^, result);
+currentLineText := container.text;
+
+FOR index := 0 TO LEN(container.text)-1 DO
+	IF(currentLineText[index] >= 48 AND currentLineText[index] <= 57)THEN
+		currentParseValue := currentParseValue * 10;
+		currentParseValue := currentParseValue + currentLineText[index]-48;
+		found := TRUE;
+	ELSE
+		IF(found)THEN
+			pValue := __NEW(LintValue);
+			__QUERYINTERFACE(pValue^, value);
+			value.value := currentParseValue;//add num to result
+			result.append(value);
+		END_IF
+		currentParseValue := 0;
+		found := FALSE;
+	END_IF
+END_FOR	
+
+IF(found)THEN
+	pValue := __NEW(LintValue);
+	__QUERYINTERFACE(pValue^, value);
+	value.value := currentParseValue;//add num to result
+	result.append(value);
+END_IF
+
+getAllNumbersLint := result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="getAllNumbersUlint" Id="{9003338a-654c-459a-9632-e6e2da944a87}">
+      <Declaration><![CDATA[METHOD getAllNumbersUlint : IArrayList
+VAR_INPUT
+	container :CNM_AoC.IStringContainer;
+END_VAR
+VAR
+	index : DINT;
+	currentParseValue :ULINT;
+	currentLineText : STRING(255);
+	found :BOOL;
+	result :CNM_CollectionInterfaces.IArrayList;
+	pResult :POINTER TO CNM_Collections.ArrayList;
+	pValue :POINTER TO CNM_AoC.UlintValue;
+	value :CNM_AoC.IHaveUlintValue;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[pResult := __NEW(ArrayList(initialSize := 2));
+__QUERYINTERFACE(pResult^, result);
+currentLineText := container.text;
+
+FOR index := 0 TO LEN(container.text)-1 DO
+	IF(currentLineText[index] >= 48 AND currentLineText[index] <= 57)THEN
+		currentParseValue := currentParseValue * 10;
+		currentParseValue := currentParseValue + currentLineText[index]-48;
+		found := TRUE;
+	ELSE
+		IF(found)THEN
+			pValue := __NEW(UlintValue);
+			__QUERYINTERFACE(pValue^, value);
+			value.value := currentParseValue;//add num to result
+			result.append(value);
+		END_IF
+		currentParseValue := 0;
+		found := FALSE;
+	END_IF
+END_FOR	
+
+IF(found)THEN
+	pValue := __NEW(UlintValue);
+	__QUERYINTERFACE(pValue^, value);
+	value.value := currentParseValue;//add num to result
+	result.append(value);
+END_IF
+
+getAllNumbersUlint := result;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

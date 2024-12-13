@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="IMove" Id="{80b2ca11-4ad1-4c1f-b84b-6164ce6308a1}">
+    <Declaration><![CDATA[INTERFACE IMove
+]]></Declaration>
+    <Method Name="tryMove" Id="{b8ded6ed-0f48-46d9-a6f4-d293ea69548a}">
+      <Declaration><![CDATA[METHOD tryMove : BOOL
+VAR_INPUT
+	guard :IGuard;
+	map :I2dArray;
+	collision :DINT := 1;
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

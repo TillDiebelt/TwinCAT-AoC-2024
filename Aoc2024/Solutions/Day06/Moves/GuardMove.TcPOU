@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="GuardMove" Id="{b4aed7c2-8f7d-4c2b-8d51-19cb22c2ee99}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT GuardMove EXTENDS Object IMPLEMENTS IMove
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="className" Id="{5ca0605e-01d8-45c8-b51e-2514556f97ac}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This abstract property returns the class name of the concrete object, 
+which is useful for logging/debugging purpose or to check the class name
+for ``__DELETE`` in factories (sometimes it's necessary to do more 
+than just to free the memory).
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+PROPERTY className : CNM_AbstractObject.ClassName
+]]></Declaration>
+      <Get Name="Get" Id="{5c6890ff-727a-4cf6-a3ac-5b00086b97a1}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="direction" Id="{930f3490-505b-4ad3-9b7c-490d6d5be74c}">
+      <Declaration><![CDATA[PROPERTY PROTECTED ABSTRACT direction : Rotation]]></Declaration>
+      <Get Name="Get" Id="{a0f9e8b7-8fc6-4747-8279-b98d99b6a975}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="getMoveOffset" Id="{2175a08b-23c0-4864-b1f3-acb9bd6dccf0}">
+      <Declaration><![CDATA[METHOD getMoveOffset : BOOL
+VAR_OUTPUT
+	x :DINT;
+	y:DINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE THIS^.direction OF
+Rotation.UP:
+	x := 0;
+	y := -1;
+Rotation.RIGHT:
+	x := 1;
+	y := 0;
+Rotation.DOWN:
+	x := 0;
+	y := 1;
+Rotation.LEFT:
+	x := -1;
+	y := 0;
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="tryMove" Id="{633ddb4e-29da-433b-be6a-7aa82953280f}">
+      <Declaration><![CDATA[METHOD tryMove : BOOL
+VAR_INPUT
+	guard :IGuard;
+	map	: I2dArray;
+	collision :DINT := 1;
+END_VAR
+VAR
+	diffX :DINT;
+	diffY :DINT;
+	newX :DINT;
+	newY :DINT;
+	obj :CNM_AbstractObject.IObject;
+	val :CNM_AoC.IHaveValue;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.getMoveOffset(x => diffX, y => diffY);
+newX := guard.x + diffX;
+newY := guard.y + diffY;
+
+tryMove := FALSE;
+
+RETURN(NOT map.isInBounds(x := newX, y := newY));
+
+obj := map.getObjectAt(x := newX, y := newY);
+
+IF(__QUERYINTERFACE(obj, val) AND_THEN TO_DINT(val.value) <> collision)THEN
+	tryMove := TRUE;
+	guard.x := newX;
+	guard.y := newY;
+	guard.direction := THIS^.direction;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="IHaveValue" Id="{4e6e129b-b20c-40ed-b7c8-52e6a0651e29}">
+    <Declaration><![CDATA[(*
+	dont we all?
+*)
+INTERFACE IHaveValue EXTENDS CNM_AbstractObject.IObject
+]]></Declaration>
+    <Property Name="value" Id="{3eb830af-e5ca-419e-8e44-d9db624cc9f9}">
+      <Declaration><![CDATA[PROPERTY value : LREAL]]></Declaration>
+      <Get Name="Get" Id="{6b41dc31-2716-4f7f-8d1f-3458440b27d6}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{9f6fc43a-e850-45eb-a61d-8e45ec95bb66}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+  </Itf>
+</TcPlcObject>

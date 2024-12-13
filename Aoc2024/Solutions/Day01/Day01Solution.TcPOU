@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Day01Solution" Id="{9315ab8c-3d45-4ca1-afce-3a0c5e4a388b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Day01Solution EXTENDS CNM_AoC.AbstractSolver 
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="solve" Id="{417fad05-b8ec-4a55-b087-3ffb0d98a546}">
+      <Declaration><![CDATA[METHOD solve
+VAR_INPUT
+	step	: DINT;
+END_VAR
+VAR_INST
+	pathInserted :BOOL;
+	left :CNM_Collections.ArrayList(100);
+	right :CNM_Collections.ArrayList(100);
+	parser :NumberParser();
+	sum : DINT;
+END_VAR
+VAR
+	parsed :CNM_CollectionInterfaces.IArrayList;
+	tmpObj :CNM_AbstractObject.IObject;
+	value1 :CNM_AoC.IHaveValue;
+	value2 :CNM_AoC.IHaveValue;
+	index : DINT;
+	currentLine :ILine;
+	currentLineObject :IObject;
+END_VAR
+VAR CONSTANT
+	READ_INPUT :DINT := 2;
+	GET_LINES :DINT := READ_INPUT + 1;
+	PARSE :DINT := GET_LINES + 1;
+	SORT_LEFT :DINT := PARSE + 1;
+	SORT_RIGHT :DINT := SORT_LEFT + 1;
+	SOLVE_PART1 :DINT := SORT_RIGHT + 1;
+	RESET_FOR_PART2 :DINT := SOLVE_PART1 + 1;
+	SOLVE_PART2 :DINT := RESET_FOR_PART2 + 1;
+	APPEND_SOLUTION :DINT := SOLVE_PART2 + 1;
+	WRITE_SOLUTION :DINT := APPEND_SOLUTION + 1;
+	CLEAN_UP :DINT := WRITE_SOLUTION + 1;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE step OF
+PARSE:	
+	THIS^.lines.iterate(execute := FALSE);
+	WHILE(THIS^.lines.iterate(execute := TRUE, line => currentLine) = CNM_ReturnTypes.SingleExecutionState.BUSY)DO
+		parsed := parser.getAllNumbers(currentLine);
+		left.append(parsed.dequeue());
+		right.append(parsed.dequeue());
+		parsed.deepDestruct();
+	END_WHILE
+	cm.proceed();
+SORT_LEFT:
+	cm.evaluate(SEL(right.size = left.size, CNM_ReturnTypes.SingleExecutionState.ERROR, CNM_ReturnTypes.SingleExecutionState.SUCCESS));
+	cm.evaluate(left.instant.sort());
+SORT_RIGHT:
+	cm.evaluate(right.instant.sort());
+SOLVE_PART1:
+	FOR index := 0 TO TO_DINT(left.size)-1 DO
+		left.getObjectAt(index, object => tmpObj);
+		__QUERYINTERFACE(tmpObj, value1);
+		right.getObjectAt(index, object => tmpObj);
+		__QUERYINTERFACE(tmpObj, value2);
+		sum := sum + TO_DINT(ABS(value1.value - value2.value));
+	END_FOR
+	THIS^.bufferWrite := Concat(TO_STRING(sum), '$n');
+	cm.proceed();
+RESET_FOR_PART2:
+	left.iterate(FALSE);
+	sum := 0;
+	cm.proceed();
+SOLVE_PART2:
+	cm.evaluate(left.iterate(TRUE, object => tmpObj));
+	IF(__QUERYINTERFACE(tmpObj, value1))THEN
+		right.iterate(FALSE);
+		WHILE(right.iterate(TRUE, object => tmpObj) = CNM_ReturnTypes.SingleExecutionState.BUSY AND __QUERYINTERFACE(tmpObj, value2))DO
+			IF(value1.value = value2.value)THEN
+				sum := sum + TO_DINT(value1.value);
+			END_IF
+			IF(value2.value > value1.value)THEN
+				EXIT;
+			END_IF
+		END_WHILE
+	END_IF		
+APPEND_SOLUTION:
+	THIS^.bufferWrite :=Concat(THIS^.bufferWrite, Concat(TO_STRING(sum), '$n'));
+	cm.proceed();
+WRITE_SOLUTION:
+	THIS^.writeSolution();
+CLEAN_UP:
+	cm.step.next := CNM_ReturnTypes.DefaultSteps.STEP.SUCCESS;
+	lines.deepDestruct();
+	left.deepDestruct();
+	right.deepDestruct();
+	cm.proceed();
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

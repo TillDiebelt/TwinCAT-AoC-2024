@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="ISumCollectorLINT" Id="{63a5dcea-26bc-4d33-9956-e97b3e1c003c}">
+    <Declaration><![CDATA[INTERFACE ISumCollectorLINT EXTENDS CNM_AbstractObject.IObject
+]]></Declaration>
+    <Method Name="addValue" Id="{6ce63ed9-cec4-493f-9f2a-232d8d238cfe}">
+      <Declaration><![CDATA[METHOD addValue
+VAR_INPUT
+	value :LINT;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Property Name="enabled" Id="{8af8e446-90cc-4712-8d12-640844d5690e}">
+      <Declaration><![CDATA[PROPERTY enabled : BOOL]]></Declaration>
+      <Get Name="Get" Id="{32225075-ece5-4e84-980a-93d7ab28fdcf}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{676a8b64-50bd-4e4e-9ee1-aab7253a5cb7}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+    <Property Name="sum" Id="{a64c9fc2-087c-4f1d-a724-1410d388d488}">
+      <Declaration><![CDATA[PROPERTY sum : LINT]]></Declaration>
+      <Get Name="Get" Id="{8e137847-8821-4b1c-a417-a01b27772185}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{53963f74-8a19-4975-8d36-27043b1553f2}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+  </Itf>
+</TcPlcObject>

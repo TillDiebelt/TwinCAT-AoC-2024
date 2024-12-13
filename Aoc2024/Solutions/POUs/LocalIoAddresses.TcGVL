@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="LocalIoAddresses" Id="{df2c9936-e1f8-4e56-a6b8-4d8b678b2660}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	NetId :STRING := '10.175.16.49.1.1';
+	Path :STRING := 'C:\Users\tdie\Documents\tdie_AOC\2024';
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

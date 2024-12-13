@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="IGuard" Id="{f2b2b829-faf3-4b6e-b1b8-c13d026452dc}">
+    <Declaration><![CDATA[INTERFACE IGuard
+]]></Declaration>
+    <Property Name="direction" Id="{b8254941-eba0-4810-986b-5e372dc9e805}">
+      <Declaration><![CDATA[PROPERTY direction : Rotation]]></Declaration>
+      <Get Name="Get" Id="{f3a21c21-f7d3-4b12-99f2-709f0fac04b7}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{1b429841-f5b8-421a-8e7b-16c2d35a940f}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+    <Method Name="walk" Id="{6f02a1d2-f5e9-436f-bf4e-74f98c745008}">
+      <Declaration><![CDATA[METHOD walk
+VAR_INPUT
+	map :I2dArray;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Property Name="x" Id="{1f1f695e-9310-48bf-a85b-ebda0d43e411}">
+      <Declaration><![CDATA[PROPERTY x : DINT]]></Declaration>
+      <Get Name="Get" Id="{fba93a85-e7c3-4c8a-be66-15bd7d9b23ec}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{4c2f2195-acc6-4ae8-8551-f75417517614}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+    <Property Name="y" Id="{a413a7c4-99f4-4fef-a5f0-e81f28a124e5}">
+      <Declaration><![CDATA[PROPERTY y : DINT]]></Declaration>
+      <Get Name="Get" Id="{e40c0bc4-6c59-4908-8f19-fae4d482ba5a}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{bb6eb65f-6e97-4733-81f5-ae2d7c3d12f0}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+  </Itf>
+</TcPlcObject>

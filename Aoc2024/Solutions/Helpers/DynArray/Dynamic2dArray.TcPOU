@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Dynamic2dArray" Id="{d613e9b8-db0d-4554-a83a-fa6a8f0506c9}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'enable_dynamic_creation'}
+FUNCTION_BLOCK Dynamic2dArray EXTENDS Object IMPLEMENTS I2dArray
+VAR
+	dim1 :UDINT;
+	dim2 :UDINT;
+	container :POINTER TO CNM_AbstractObject.IObject;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="className" Id="{e9b24e1b-29cc-4052-ac6e-de5a7d9997f4}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This abstract property returns the class name of the concrete object, 
+which is useful for logging/debugging purpose or to check the class name
+for ``__DELETE`` in factories (sometimes it's necessary to do more 
+than just to free the memory).
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+PROPERTY className : CNM_AbstractObject.ClassName
+]]></Declaration>
+      <Get Name="Get" Id="{15fdef54-3dfd-49a9-916d-8be8c4655e73}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[className := 'Dynamic2dArray';]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="deepDestruct" Id="{5ecca2fa-79fd-49fb-89ec-0ee95d1bfdda}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This method is a self-destruction if the object was created dynamically.
+If the object is a container class, the container content is destroyed with it.
+The output NULL is a constant which is always NULL,
+this allows a semi-pleasant notation: ``foo.deepDestruct(NULL => foo);``.
+
+.. attention:: 
+	For derivations: **If a derived class needs ``deepDestruct`` this method must be overwritten.**
+	otherwise it just calls :ref:`Object.destruct`. 
+
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+
+InOut:
+	+-----------------+------+---------+------+------------------------------------------+
+	| Scope           | Name | Type    | Init | Comment                                  |
+	+=================+======+=========+======+==========================================+
+	| Output CONSTANT | NULL | __XWORD | 0    | ``NULL`` is a constant which is always 0 |
+	+-----------------+------+---------+------+------------------------------------------+
+
+*)
+METHOD deepDestruct
+VAR_OUTPUT CONSTANT
+	(* NULL is a constant which is always 0 *)
+	NULL	: __XWORD := 0;
+END_VAR
+VAR
+	indexY:UDINT;
+	indexX:UDINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR indexY := 0 TO THIS^.dim1-1 DO
+	FOR indexX := 0 TO THIS^.dim2-1 DO
+		IF(THIS^.container[(indexY*THIS^.dim2)+indexX] <> 0)THEN
+			THIS^.container[(indexY*THIS^.dim2)+indexX].destruct();
+		END_IF
+	END_FOR
+END_FOR
+THIS^.destruct();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_Exit" Id="{2738e414-9e6a-4827-8a22-0cc11a5f14dd}">
+      <Declaration><![CDATA[(*FB_Exit must be implemented explicitly. If there is an implementation, then the
+method is called before the controller removes the code of the function block instance
+(implicit call). The return value is not evaluated.*)
+METHOD FB_Exit : BOOL
+VAR_INPUT
+	(* TRUE: the exit method is called in order to leave the instance which will be copied afterwards (online change).  *)
+	bInCopyCode	: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[__DELETE(THIS^.container);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{cae2bcfc-d0be-4c69-881e-8bf79e9556af}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+The constructor ``FB_init`` is needed to create an unique hash code.
+The hash code is a pseudo random number create with a xorshift_ algorithm.
+It can be overwritten on derivations, because it will be called implicit, ``SUPER^.FB_init()`` is not required.
+For more information check: `Behavoir with derived function blocks`_
+
+.. _Behavoir with derived function blocks: https://infosys.beckhoff.com/content/1033/tc3_plc_intro/5482088715.html?id=6983869892358031022
+.. _xorshift: https://en.wikipedia.org/wiki/Xorshift
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+parameters
+=================
+
+*)
+METHOD FB_init : BOOL
+VAR_INPUT
+	(* if TRUE, the retain variables are initialized (warm start / cold start)*)
+	bInitRetains	: BOOL;
+	(* if TRUE, the instance afterwards gets moved into the copy code (online change) *)
+	bInCopyCode	: BOOL;
+	sizeDim1 :UDINT;
+	sizeDim2 :UDINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.container := __NEW(__XWORD, (sizeDim1 * sizeDim2));
+THIS^.dim1 := sizeDim1;
+THIS^.dim2 := sizeDim2;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="getObjectAt" Id="{7b18ae20-ac95-4f2a-a7cc-ff6c24fdebfa}">
+      <Declaration><![CDATA[METHOD getObjectAt : IObject
+VAR_INPUT
+	y :UDINT; //dimension 1
+	x :UDINT; //dimension 2
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[getObjectAt := THIS^.container[(y*THIS^.dim2)+x];
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="isInBounds" Id="{ebfe2ee8-f493-40c9-bd66-d841804df9b8}">
+      <Declaration><![CDATA[METHOD isInBounds : BOOL
+VAR_INPUT
+	x :UDINT;
+	y :UDINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[isInBounds := (x < THIS^.dim2 AND y < THIS^.dim1); //cheat >= 0 by UDINT overflow
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="setObjectAt" Id="{82dba4a0-35ae-4e1c-905d-17baeb262c1d}">
+      <Declaration><![CDATA[METHOD setObjectAt
+VAR_INPUT
+	y :UDINT; //dimension 1
+	x :UDINT; //dimension 2
+	obj :CNM_AbstractObject.IObject;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.container[(y*THIS^.dim2)+x] := obj;
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.11">
+	<Project ProjectGUID="{80CA4185-1FF2-4ECB-9CCF-4CD876DA1C2E}" TargetNetId="39.21.149.170.1.1" Target64Bit="true" ShowHideConfigurations="#x6">
+		<System>
+			<Settings RouterMemory="536870912" MaxStackSize="4096"/>
+			<Tasks>
+				<Task Id="3" Priority="20" CycleTime="100000" AmsPort="350" AdtTasks="true">
+					<Name>PlcTask</Name>
+				</Task>
+			</Tasks>
+			<TypeSystem>
+				<AdditionalTmcFile Name="AocErrors" File="AocErrors.tmc"/>
+			</TypeSystem>
+		</System>
+		<Plc>
+			<Project File="Solutions.xti"/>
+			<Project File="TcAocLib.xti"/>
+		</Plc>
+	</Project>
+</TcSmProject>

@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Day06Solution" Id="{2a380a8f-6fc1-42f9-a0bd-4a4147fb630e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Day06Solution EXTENDS AbstractSolver]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="solve" Id="{a26dd5f4-0588-4eb9-9c40-717efa00f9e2}">
+      <Declaration><![CDATA[METHOD solve
+VAR_INPUT
+	step	: DINT;
+END_VAR
+VAR_INST
+	sum : DINT;
+	badGuyGuard :Guard();
+	loopY :DINT;
+END_VAR
+VAR_INST
+	guardStartX :DINT;
+	guardStartY :DINT;
+END_VAR
+VAR_INST //map stuff	
+	sizeY :UDINT;
+	sizeX :UDINT;
+	map :I2dArray;
+	pMap :POINTER TO Dynamic2dArray;
+	indexX :DINT;
+	indexY :DINT;
+	lineText :Tc2_System.T_MaxString;
+	curChar :STRING(1);
+	pVal :POINTER TO CNM_AoC.Value;
+END_VAR
+VAR
+	parsed :CNM_CollectionInterfaces.IArrayList;
+	tmpObj :CNM_AbstractObject.IObject;
+	tmpVal :CNM_AoC.IHaveValue;
+	sequence :CNM_CollectionInterfaces.IArrayList;
+	sequenceCopy :CNM_CollectionInterfaces.IArrayList;
+	index : DINT;
+	currentLine :ILine;
+	currentLineObject :IObject;
+END_VAR
+VAR CONSTANT
+	READ_INPUT :DINT := 2;
+	GET_LINES :DINT := READ_INPUT + 1;
+	PARSE :DINT := GET_LINES + 1;
+	SOLVE_PART1 :DINT := PARSE + 1;
+	RESET_FOR_PART2 :DINT := SOLVE_PART1 + 1;
+	SOLVE_PART2 :DINT := RESET_FOR_PART2 + 1;
+	APPEND_SOLUTION :DINT := SOLVE_PART2 + 1;
+	WRITE_SOLUTION :DINT := APPEND_SOLUTION + 1;
+	CLEAN_UP :DINT := WRITE_SOLUTION + 1;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE step OF
+PARSE:	
+	lines.getLineAt(0, line => currentLine);
+	sizeY := TO_UDINT(lines.size);
+	sizeX := LEN(currentLine.text);
+	pMap := __NEW(Dynamic2dArray(sizeDim1 := sizeY, sizeDim2 := sizeX));
+	RETURN (NOT __QUERYINTERFACE(pMap^,map));
+	THIS^.lines.iterate(execute := FALSE);
+	indexY := 0;
+	WHILE(THIS^.lines.iterate(execute := TRUE, line => currentLine) = CNM_ReturnTypes.SingleExecutionState.BUSY)DO
+		FOR index := 0 TO sizeX-1 DO
+			lineText := currentLine.text;
+			curChar := F_ToCHR(lineText[index]);
+			IF(curChar = '.')THEN				
+				pVal := __NEW(Value());
+				pVal^.value := 0;
+				map.setObjectAt(y := indexY, x := index, pVal^);
+			ELSIF(curChar = '#')THEN				
+				pVal := __NEW(Value());
+				pVal^.value := 1;
+				map.setObjectAt(y := indexY, x := index, pVal^);
+			ELSIF(curChar = '^')THEN				
+				pVal := __NEW(Value());
+				pVal^.value := 0;
+				badGuyGuard.x := index;
+				badGuyGuard.y := indexY;
+				badGuyGuard.direction := Rotation.UP;
+				guardStartX := index;
+				guardStartY := indexY;
+				map.setObjectAt(y := indexY, x := index, pVal^);
+			END_IF
+		END_FOR
+		indexY := indexY+1;
+	END_WHILE
+	cm.proceed();
+SOLVE_PART1:
+	THIS^.walkToEdge(guard := badGuyGuard, map := map, maxX := sizeX, maxY := sizeY, visitedFields => sum);
+	cm.proceed();	
+RESET_FOR_PART2:
+	THIS^.bufferWrite := Concat(TO_STRING(sum), '$n');
+	sum := 0;
+	cm.proceed();
+	indexY := 0;
+SOLVE_PART2:
+	FOR index := 0 TO sizeX-1 DO
+		IF(index = guardStartX AND indexY = guardStartY)THEN
+			CONTINUE;
+		END_IF
+		tmpObj := map.getObjectAt(x := index, y := indexY);
+		IF(__QUERYINTERFACE(tmpObj, tmpVal) AND_THEN tmpVal.value = 0)THEN		
+			tmpVal.value := 1; //set stone
+			badGuyGuard.x := guardStartX;
+			badGuyGuard.y := guardStartY;
+			badGuyGuard.direction := Rotation.UP;
+			sum := sum + SEL(THIS^.walkToEdge(guard := badGuyGuard, map := map, maxX := sizeX, maxY := sizeY, visitedFields => sum), 1, 0);
+			tmpVal.value := 0; //reset stone
+		END_IF
+	END_FOR	
+	indexY := indexY+1;
+	cm.waitFor(indexY = sizeY);
+APPEND_SOLUTION:
+	THIS^.bufferWrite :=Concat(THIS^.bufferWrite, Concat(TO_STRING(sum), '$n'));
+	cm.proceed();
+WRITE_SOLUTION:
+	THIS^.writeSolution();
+CLEAN_UP:
+	cm.step.next := CNM_ReturnTypes.DefaultSteps.STEP.SUCCESS;
+	lines.deepDestruct();
+	map.deepDestruct();
+	cm.proceed();
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="walkToEdge" Id="{2aed2944-f52c-4ff2-a3ca-ba442c0b9bc4}">
+      <Declaration><![CDATA[METHOD walkToEdge : BOOL //false if loop
+VAR_INPUT
+	guard :IGuard;
+	map :I2dArray;
+	maxX :DINT;
+	maxY :DINT;
+END_VAR
+VAR_OUTPUT
+	visitedFields :DINT;
+END_VAR
+VAR
+	seenField :BOOL;
+	index :DINT;
+	//there is no dictionary yet so I am just lazy and will do this:
+	//could also just be a list with contains, but naaahhh
+	seen :ARRAY[0..255,0..255,0..3] OF BOOL; //x, y, rotation
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[WHILE(guard.x <> 0 AND_THEN guard.x <> maxX-1 AND_THEN guard.y <> 0 AND_THEN guard.y <> maxY-1)DO
+	RETURN (seen[guard.x, guard.y, guard.direction]);
+	seenField := FALSE;
+	FOR index := 0 TO 3 DO
+		IF(seen[guard.x, guard.y, index])THEN
+			seenField := TRUE;
+		END_IF
+	END_FOR
+	visitedFields := visitedFields + SEL(seenField, 1, 0); //only add fields which where never seen
+	seen[guard.x, guard.y, guard.direction] := TRUE;
+	guard.walk(map);
+END_WHILE
+
+visitedFields := visitedFields + 1; //add the last field, or replace with repeat loop
+walkToEdge := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

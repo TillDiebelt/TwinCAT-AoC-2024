@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="AbstractSolver" Id="{aba4e839-b133-42dd-8753-9c97e6d0114f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT AbstractSolver
+VAR
+	io :FileHandler();
+	bufferRead : STRING(64000) := '';
+	bufferWrite : STRING(255) := '';	
+	cm :CNM_CycleManager.SimpleCycleManager();
+	lines :ILineList;
+	inoutPath : STRING;
+	snetId :STRING;	
+	inputFile :STRING;
+	outputFile :STRING := 'solution.txt';
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_Init" Id="{3f0a689f-20cd-4aa8-8e97-d1d6feafead4}">
+      <Declaration><![CDATA[//FB_Init is always available implicitly and it is used primarily for initialization.
+//The return value is not evaluated. For a specific influence, you can also declare the
+//methods explicitly and provide additional code there with the standard initialization
+//code. You can evaluate the return value.
+METHOD FB_Init: BOOL
+VAR_INPUT
+    bInitRetains: BOOL; // TRUE: the retain variables are initialized (reset warm / reset cold)
+    bInCopyCode: BOOL;  // TRUE: the instance will be copied to the copy code afterward (online change)
+	sNetId :STRING;   
+	folderPath :STRING;   
+	inputFile :STRING;   
+	outputFile :STRING;   
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.snetId := sNetId;
+THIS^.inoutPath := folderPath;
+THIS^.inputFile := inputFile;
+THIS^.outputFile := outputFile;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="run" Id="{31c020a1-1cda-4437-9426-5cbfb7e329ae}">
+      <Declaration><![CDATA[METHOD FINAL run : CNM_ReturnTypes.SingleExecutionState
+VAR_INPUT
+	execute :BOOL;
+END_VAR
+VAR CONSTANT
+	READ_INPUT :DINT := 2;
+	GET_LINES :DINT := READ_INPUT + 1;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[cm(execute := execute);
+
+CASE cm.step.current OF
+CNM_ReturnTypes.DefaultSteps.STEP.IDLE:;
+CNM_ReturnTypes.DefaultSteps.STEP.INIT:
+	cm.waitFor(inoutPath <> '' AND snetId <> '');
+READ_INPUT:
+	cm.evaluate(
+		io.read(
+			execute := cm.executeStep, 
+			text := ADR(bufferRead), 
+			sNetId := THIS^.snetId, 
+			sDirectoryPath := THIS^.inoutPath, 
+			sFileName := THIS^.inputFile,
+			readLen := SIZEOF(THIS^.bufferRead)
+		)
+	);
+GET_LINES:
+	lines := GetAllLinesFromString(ADR(THIS^.bufferRead), SIZEOF(THIS^.bufferRead));
+	cm.proceed();
+CNM_ReturnTypes.DefaultSteps.STEP.SUCCESS:;
+CNM_ReturnTypes.DefaultSteps.STEP.ERROR:;
+ELSE
+	THIS^.solve(cm.step.current);
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="solve" Id="{e352a740-fff9-48d2-9e07-87e3b3b65326}">
+      <Declaration><![CDATA[METHOD ABSTRACT solve
+VAR_INPUT
+	step :DINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="writeSolution" Id="{7e3dc011-edac-4415-8cdb-1acb2b352be3}">
+      <Declaration><![CDATA[METHOD FINAL writeSolution
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[cm.evaluate(
+	io.write(
+		execute := cm.executeStep, 
+		text := ADR(THIS^.bufferWrite), 
+		sNetId := THIS^.snetId, 
+		sDirectoryPath := THIS^.inoutPath, 
+		sFileName := THIS^.outputFile
+	)
+);]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

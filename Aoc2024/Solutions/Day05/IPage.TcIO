@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="IPage" Id="{75a07323-c861-4cd5-a1b7-09f4c3448491}">
+    <Declaration><![CDATA[INTERFACE IPage EXTENDS IObject, CNM_AoC.IHaveValue
+]]></Declaration>
+    <Method Name="addSuccessor" Id="{4e32ad3d-36da-4070-9f77-dae4a2af665b}">
+      <Declaration><![CDATA[METHOD addSuccessor
+VAR_INPUT
+	successor :CNM_AoC.IHaveValue;
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="IStringContainer" Id="{5a8f6dc7-6a29-4589-82b3-8496910bf3df}">
+    <Declaration><![CDATA[INTERFACE IStringContainer EXTENDS IHaveValue
+]]></Declaration>
+    <Property Name="text" Id="{c68aa7aa-f694-4617-b547-2d74ea10483b}">
+      <Declaration><![CDATA[PROPERTY text : STRING(255)]]></Declaration>
+      <Get Name="Get" Id="{9cbd87cb-335a-4d0e-9626-1633ebf9d259}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{ee4feb52-11c5-4b80-a690-8a8c40d29d6b}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+  </Itf>
+</TcPlcObject>

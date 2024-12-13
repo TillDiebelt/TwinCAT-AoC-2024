@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Day02Solution" Id="{54af8921-9e15-460c-9af0-2fcfd1d8da8d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Day02Solution EXTENDS AbstractSolver
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="isSequenceValid" Id="{f691322d-fc90-4f19-a95f-c2ddf4b19209}">
+      <Declaration><![CDATA[METHOD PRIVATE isSequenceValid : BOOL
+VAR_INPUT
+	sequence :CNM_CollectionInterfaces.IArrayList;
+END_VAR
+VAR
+	tmpObj :CNM_AbstractObject.IObject;
+	number :CNM_AoC.IHaveValue;
+	skipped : BOOL;
+	first :BOOL;
+	second :BOOL;
+	lastValue :DINT;
+	prevLastValue :DINT := -1;
+	errors :DINT := 0;
+	currentValue :DINT;
+	sequenceResult :CNM_ReturnTypes.SingleExecutionState;
+	order :DINT; //-1 falling, 1 rising, 0 unknown
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[sequence.iterate(FALSE);
+WHILE((sequenceResult := sequence.iterate(TRUE, object => tmpObj)) = CNM_ReturnTypes.SingleExecutionState.BUSY AND __QUERYINTERFACE(tmpObj, number))DO
+	currentValue := TO_DINT(number.value);
+	IF(NOT first)THEN
+		lastValue := currentValue;
+		first := TRUE;
+		CONTINUE;
+	END_IF
+	IF(ABS(currentValue - lastValue) > 3 OR ABS(currentValue - lastValue) = 0)THEN
+		EXIT;
+	END_IF
+	IF(currentValue > lastValue)THEN
+		IF(order = -1)THEN
+			EXIT;
+		ELSE
+			order := 1;
+		END_IF
+	END_IF
+	IF(currentValue < lastValue)THEN
+		IF(order = 1)THEN
+			EXIT;
+		ELSE
+			order := -1;
+		END_IF
+	END_IF
+	lastValue := currentValue;
+END_WHILE
+isSequenceValid := (sequenceResult = CNM_ReturnTypes.SingleExecutionState.SUCCESS);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="solve" Id="{c59c1f80-3ed3-4073-8176-fab4d501378a}">
+      <Declaration><![CDATA[METHOD solve
+VAR_INPUT
+	step	: DINT;
+END_VAR
+VAR_INST
+	pathInserted :BOOL;
+	sequences :CNM_Collections.ArrayList(100);
+	parser :NumberParser();
+	sum : DINT;
+END_VAR
+VAR
+	parsed :CNM_CollectionInterfaces.IArrayList;
+	tmpObj :CNM_AbstractObject.IObject;
+	sequence :CNM_CollectionInterfaces.IArrayList;
+	sequenceCopy :CNM_CollectionInterfaces.IArrayList;
+	index : DINT;
+	currentLine :ILine;
+	currentLineObject :IObject;
+END_VAR
+VAR CONSTANT
+	READ_INPUT :DINT := 2;
+	GET_LINES :DINT := READ_INPUT + 1;
+	PARSE :DINT := GET_LINES + 1;
+	SOLVE_PART1 :DINT := PARSE + 1;
+	RESET_FOR_PART2 :DINT := SOLVE_PART1 + 1;
+	SOLVE_PART2 :DINT := RESET_FOR_PART2 + 1;
+	APPEND_SOLUTION :DINT := SOLVE_PART2 + 1;
+	WRITE_SOLUTION :DINT := APPEND_SOLUTION + 1;
+	CLEAN_UP :DINT := WRITE_SOLUTION + 1;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE step OF
+PARSE:	
+	THIS^.lines.iterate(execute := FALSE);
+	WHILE(THIS^.lines.iterate(execute := TRUE, line => currentLine) = CNM_ReturnTypes.SingleExecutionState.BUSY)DO
+		parsed := parser.getAllNumbers(currentLine);
+		sequences.append(parsed);
+	END_WHILE
+	cm.proceed();	
+SOLVE_PART1:
+	cm.evaluate(sequences.iterate(cm.executeStep, object => tmpObj));
+	IF(__QUERYINTERFACE(tmpObj, sequence))THEN
+		IF(THIS^.isSequenceValid(sequence))THEN
+			sum := sum + 1;
+		END_IF
+	END_IF		
+RESET_FOR_PART2:
+	THIS^.bufferWrite := Concat(TO_STRING(sum), '$n');
+	sum := 0;
+	cm.proceed();
+SOLVE_PART2:
+	cm.evaluate(sequences.iterate(cm.executeStep, object => tmpObj));
+	IF(__QUERYINTERFACE(tmpObj, sequence))THEN
+		FOR index := 0 TO TO_DINT(sequence.size)-1 DO
+			IF(sequence.clone(clonedObject => tmpObj) = CNM_ReturnTypes.CloneResult.SUCCESS AND_THEN __QUERYINTERFACE(tmpObj, sequenceCopy))THEN
+				sequenceCopy.removeObjectAt(index);
+				IF(THIS^.isSequenceValid(sequenceCopy))THEN
+					sum := sum + 1;
+					sequenceCopy.destruct();
+					EXIT;
+				END_IF
+				sequenceCopy.destruct();
+			END_IF
+		END_FOR
+	END_IF		
+APPEND_SOLUTION:
+	THIS^.bufferWrite :=Concat(THIS^.bufferWrite, Concat(TO_STRING(sum), '$n'));
+	cm.proceed();
+WRITE_SOLUTION:
+	THIS^.writeSolution();
+CLEAN_UP:
+	cm.step.next := CNM_ReturnTypes.DefaultSteps.STEP.SUCCESS;
+	lines.deepDestruct();
+	sequences.deepDestruct();
+	cm.proceed();
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

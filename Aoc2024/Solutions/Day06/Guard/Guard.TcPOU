@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Guard" Id="{afd8eea0-b78a-4a66-a429-46c31599c8c0}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Guard EXTENDS Object IMPLEMENTS IGuard
+VAR
+	myX :DINT;
+	myY :DINT;
+	myRotation :Rotation;
+	up :MoveUp();
+	right :MoveRight();
+	down :MoveDown();
+	left :MoveLeft();
+	myMoves :ARRAY[0..3] OF IMove := [up, right, down, left];
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="className" Id="{ee83f001-8359-49fd-bfd3-cb09aa393e8c}">
+      <Declaration><![CDATA[(*
+
+short summary
+=================
+This abstract property returns the class name of the concrete object, 
+which is useful for logging/debugging purpose or to check the class name
+for ``__DELETE`` in factories (sometimes it's necessary to do more 
+than just to free the memory).
+
+.. <legal notes>
+
+legal notes
+=================
+| SPDX-FileCopyrightText: © 2022 ekvip automation GmbH <info@ekvip.de>
+| SPDX-License-Identifier: Apache-2.0
+| For details check: Apache-2.0_
+
+.. _Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+.. </legal notes>
+
+*)
+PROPERTY className : CNM_AbstractObject.ClassName
+]]></Declaration>
+      <Get Name="Get" Id="{5005232f-5abe-47c1-b854-396d9e655cfd}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[className := 'Guard';
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="direction" Id="{dd196b13-824c-4108-b5a7-6e2c3552da21}">
+      <Declaration><![CDATA[PROPERTY direction : Rotation]]></Declaration>
+      <Get Name="Get" Id="{ff6c8677-c440-4790-89f6-49f82f37f0ea}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[direction := THIS^.myRotation;
+]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{4d7a143c-3e1c-45ca-a3aa-02be56c4a92e}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[THIS^.myRotation := direction;
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="walk" Id="{fc367a61-b9e4-4528-a8ef-d01e99d5c5e2}">
+      <Declaration><![CDATA[METHOD walk
+VAR_INPUT
+	map	: I2dArray;
+END_VAR
+VAR
+	currentDirection :DINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[currentDirection := THIS^.direction;
+
+WHILE(NOT THIS^.myMoves[currentDirection].tryMove(THIS^, map))DO
+	currentDirection := (currentDirection + 1) MOD 4; //rotate right
+END_WHILE
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="x" Id="{85c20d1e-5f7b-4d58-9df3-2cb8ca4a0654}">
+      <Declaration><![CDATA[PROPERTY x : DINT]]></Declaration>
+      <Get Name="Get" Id="{371c3fa5-bfe1-4b45-a63e-e1fcd0570aa7}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[x := THIS^.myX;
+]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{4a17c5d5-bd79-47f3-bcd8-28dddbcd62cd}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[THIS^.myX := x;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="y" Id="{21d3a506-57d4-41b5-80c2-79b6d0d02aae}">
+      <Declaration><![CDATA[PROPERTY y : DINT]]></Declaration>
+      <Get Name="Get" Id="{24e4fcc5-2153-4d8b-b4f7-a9d8a005e194}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[y := THIS^.myY;
+]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{f2829a25-cc90-45f6-abda-fee5d8a80cbb}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[THIS^.myY := y;
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+  </POU>
+</TcPlcObject>
